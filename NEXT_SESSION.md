@@ -4,11 +4,10 @@
 
 - The evaluation allows **one GitHub URL** with subfolders per project.
 - Both projects now live under `D:
-exvia`: `nexvia-fraud/` (built) and `nexvia-imaging/` (scaffold).
+exvia`: `AIML-01/` (fraud, built) and `AIML-02/` (imaging, scaffold).
 - The standalone `D:
 exvia-fraud` folder is a leftover copy; make changes in `D:
-exvia
-exvia-fraud` from now on.
+exvia\AIML-01` from now on.
 - CI moved to the repository root: `.github/workflows/fraud-ci.yml`.
 
 ---

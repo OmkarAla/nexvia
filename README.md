@@ -2,10 +2,10 @@
 
 Single submission repository containing both allotted projects. Each project lives in its own folder with its own README, tests, and deliverables.
 
-| Folder | Project | Status |
-|---|---|---|
-| [`nexvia-fraud/`](nexvia-fraud/) | Real-time financial fraud detection: Kafka stream, XGBoost + GraphSAGE blend, analyst case review, drift monitoring | **Built** — end-to-end demo, 71 unit tests, Compose + K8s |
-| [`nexvia-imaging/`](nexvia-imaging/) | AI-assisted medical imaging: DICOM/Orthanc, DenseNet + 3D U-Net, Grad-CAM, radiologist review | **Next** — scope defined, implementation not started |
+| Folder | Brief | Project | Status |
+|---|---|---|---|
+| [`AIML-01/`](AIML-01/) | AIML-01 | Nexvia Fraud — real-time fraud detection | **Built** |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Nexvia Imaging — medical imaging | **Next** |
 
 > Both are education projects. The fraud system runs on synthetic data; the imaging system will use public research datasets with an explicit "not for clinical use" notice.
 
@@ -13,7 +13,7 @@ Single submission repository containing both allotted projects. Each project liv
 
 ```
 .
-├── nexvia-fraud/          # project 1 (complete vertical slice + depth)
+├── AIML-01/               # project 1: fraud (complete)
 │   ├── src/nexvia_fraud/  # API, streaming, features, models, drift, audit
 │   ├── dashboard/         # React + Vite review UI
 │   ├── tests/             # unit + integration
@@ -21,7 +21,7 @@ Single submission repository containing both allotted projects. Each project liv
 │   ├── docker-compose.yml
 │   ├── k8s/               # Kustomize manifests
 │   └── docs/              # architecture, API, model card, limitations
-├── nexvia-imaging/        # project 2 (scaffold + scope)
+├── AIML-02/               # project 2: imaging (scaffold)
 ├── docs/superpowers/      # design spec and implementation plans
 ├── .github/workflows/     # CI for the whole repository
 └── README.md
@@ -32,7 +32,7 @@ Single submission repository containing both allotted projects. Each project liv
 Requires Docker Desktop with Compose.
 
 ```bash
-cd nexvia-fraud
+cd AIML-01
 docker compose up --build
 ```
 
@@ -42,7 +42,7 @@ docker compose up --build
 Without Docker:
 
 ```bash
-cd nexvia-fraud
+cd AIML-01
 python -m pip install -e ".[dev]"
 python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv
 python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
@@ -51,7 +51,7 @@ python scripts/seed.py --limit 600
 uvicorn nexvia_fraud.api.app:app --port 8000
 ```
 
-Full details, metrics, architecture diagrams, and limitations are in [`nexvia-fraud/README.md`](nexvia-fraud/README.md).
+Full details, metrics, architecture diagrams, and limitations are in [`AIML-01/README.md`](AIML-01/README.md).
 
 ## What is demonstrated
 
@@ -66,7 +66,7 @@ Full details, metrics, architecture diagrams, and limitations are in [`nexvia-fr
 ## Tests
 
 ```bash
-cd nexvia-fraud
+cd AIML-01
 python -m pytest -m "not integration" -q   # 71 unit tests
 python -m pytest -m integration -q          # requires Docker services
 cd dashboard && npm test && npm run build
@@ -78,11 +78,11 @@ CI runs the unit and dashboard suites on every push; the integration suite runs 
 
 - Design and decisions: [`docs/superpowers/specs/2026-11-11-two-ml-platforms-design.md`](docs/superpowers/specs/2026-11-11-two-ml-platforms-design.md)
 - Implementation plans: [`docs/superpowers/plans/`](docs/superpowers/plans/)
-- Fraud architecture: [`nexvia-fraud/docs/architecture.md`](nexvia-fraud/docs/architecture.md)
-- Fraud API: [`nexvia-fraud/docs/api.md`](nexvia-fraud/docs/api.md)
-- Model card: [`nexvia-fraud/docs/model-card.md`](nexvia-fraud/docs/model-card.md)
-- Limitations: [`nexvia-fraud/docs/limitations.md`](nexvia-fraud/docs/limitations.md)
-- Kubernetes: [`nexvia-fraud/docs/kubernetes.md`](nexvia-fraud/docs/kubernetes.md)
+- Fraud architecture: [`AIML-01/docs/architecture.md`](AIML-01/docs/architecture.md)
+- Fraud API: [`AIML-01/docs/api.md`](AIML-01/docs/api.md)
+- Model card: [`AIML-01/docs/model-card.md`](AIML-01/docs/model-card.md)
+- Limitations: [`AIML-01/docs/limitations.md`](AIML-01/docs/limitations.md)
+- Kubernetes: [`AIML-01/docs/kubernetes.md`](AIML-01/docs/kubernetes.md)
 
 ## Submission note
 
@@ -90,7 +90,7 @@ The original design proposed two standalone repositories. The evaluation allows 
 
 ## Data and ethics
 
-No Kaggle or medical data is redistributed. Demo fraud data is generated deterministically by `nexvia-fraud/src/nexvia_fraud/data/generate_demo.py`. The imaging project will use public research datasets under their licenses and will carry a prominent non-clinical-use notice.
+No Kaggle or medical data is redistributed. Demo fraud data is generated deterministically by `AIML-01/src/nexvia_fraud/data/generate_demo.py`. The imaging project will use public research datasets under their licenses and will carry a prominent non-clinical-use notice.
 
 ## Repository conventions
 

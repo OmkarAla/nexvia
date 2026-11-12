@@ -1,4 +1,6 @@
-# nexvia-fraud
+# AIML-01 — Nexvia Fraud
+
+Real-time transaction fraud scoring. Submission folder: `AIML-01` (fraud brief).
 
 Real-time transaction fraud scoring: a replayed Kafka stream, an XGBoost scorer with TreeSHAP explanations, and an analyst case-review dashboard.
 
