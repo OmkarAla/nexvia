@@ -191,7 +191,68 @@ def train_gnn(
         if isinstance(value, float) and not math.isfinite(value):
             metrics[key] = 0.0
     (out / "gnn_metrics.json").write_text(json.dumps(metrics, indent=2))
+
+    blend = _fit_blend_from_validation(frame, validation_start, score_frame, out)
+    if blend is not None:
+        (out / "blend.json").write_text(json.dumps(blend, indent=2))
+
     return metrics
+
+
+def _fit_blend_from_validation(
+    frame: pd.DataFrame,
+    validation_start: pd.Timestamp,
+    score_frame: pd.DataFrame,
+    out: Path,
+) -> dict | None:
+    """Fit the XGBoost/GNN blender on the validation time window."""
+    if not (out / "model.json").exists():
+        return None
+
+    from nexvia_fraud.features.service import FeatureService
+    from nexvia_fraud.models.blend import apply_blender, fit_blender
+    from nexvia_fraud.models.scorer import Scorer
+
+    scorer = Scorer.load(out)
+    service = FeatureService.from_dataframe(frame)
+    test_start = frame["event_time"].quantile(0.8)
+    validation = frame[
+        (frame["event_time"] >= validation_start) & (frame["event_time"] < test_start)
+    ]
+    gnn_lookup = dict(zip(score_frame["card_id"], score_frame["gnn_score"], strict=False))
+
+    xgb_prob: list[float] = []
+    gnn_prob: list[float] = []
+    labels: list[int] = []
+    for row in validation.itertuples(index=False):
+        card_score = gnn_lookup.get(row.card_id)
+        if card_score is None:
+            continue
+        features = service.get_features(
+            row.card_id,
+            row.event_time,
+            float(row.amount),
+            row.device_id,
+            row.email_domain,
+            row.addr_id,
+        )
+        xgb_prob.append(scorer.score(features).score)
+        gnn_prob.append(float(card_score))
+        labels.append(int(row.is_fraud))
+
+    if len(labels) < 20 or len(set(labels)) < 2:
+        return None
+
+    y = np.asarray(labels)
+    blend = fit_blender(np.asarray(xgb_prob), np.asarray(gnn_prob), y)
+    blended = [
+        apply_blender(blend, xgb_value, gnn_value)
+        for xgb_value, gnn_value in zip(xgb_prob, gnn_prob, strict=False)
+    ]
+    blend["xgb_val_pr_auc"] = float(average_precision_score(y, xgb_prob))
+    blend["gnn_val_pr_auc"] = float(average_precision_score(y, gnn_prob))
+    blend["blended_val_pr_auc"] = float(average_precision_score(y, blended))
+    return blend
 
 
 def load_gnn_scores(out_dir: str | Path) -> dict[str, float]:

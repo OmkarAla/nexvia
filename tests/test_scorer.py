@@ -60,3 +60,36 @@ def test_scorer_uses_best_iteration(scorer):
         )[0]
     )
     assert scorer.score(features).score == pytest.approx(expected)
+
+
+def test_scorer_blends_known_card(tmp_path, demo_df):
+    import json
+
+    import pandas as pd
+
+    train_model(demo_df, str(tmp_path), run_id="blend-test")
+    pd.DataFrame(
+        [{"card_id": "card-known", "gnn_score": 0.9, "split": "train"}]
+    ).to_parquet(tmp_path / "gnn_card_scores.parquet", index=False)
+    (tmp_path / "blend.json").write_text(
+        json.dumps({"coef": [0.7, 0.3], "intercept": 0.1, "n": 100})
+    )
+
+    scorer = Scorer.load(tmp_path)
+    features = {name: 0.5 for name in scorer.feature_names}
+
+    blended = scorer.score(features, card_id="card-known")
+    assert blended.mode == "blended"
+    assert blended.gnn_score == 0.9
+    assert 0.0 <= blended.score <= 1.0
+
+    fallback = scorer.score(features, card_id="card-unknown")
+    assert fallback.mode == "xgb_only"
+    assert fallback.gnn_score is None
+    assert 0.0 <= fallback.score <= 1.0
+
+
+def test_scorer_without_gnn_artifacts_serves(scorer):
+    result = scorer.score({name: 0.1 for name in scorer.feature_names}, card_id="card-1")
+    assert result.mode == "xgb_only"
+    assert result.gnn_score is None
