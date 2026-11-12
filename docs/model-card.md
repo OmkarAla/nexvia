@@ -76,6 +76,33 @@ TreeSHAP contributions are stored per transaction and shown in the case detail. 
 - No fairness analysis: device/email/address features can proxy for geography or income.
 - Precision @ 100 is modest (0.49), so the top of the queue still contains false positives.
 
+## Graph model (run `demo-gnn-001`)
+
+Heterogeneous GraphSAGE over `card`, `device`, `email`, and `addr` nodes with bidirectional `uses`/`used_by` edges. Two `SAGEConv` layers (hidden 32), trained on cards from the training window with a seeded 70/15/15 card split (435 / 93 / 94 cards). Node features are degree and amount aggregates; fraud labels are never used as features.
+
+Test metrics use embeddings from a graph built only from rows **before** the test window, so no future edges leak. Serving embeddings come from a nightly full-graph precompute.
+
+| Metric | Value |
+|---|---|
+| Test card PR-AUC | 0.582 |
+| Test card ROC-AUC | 0.694 |
+| Validation card PR-AUC | 0.631 |
+| Early-stopping epoch | 13 |
+
+## Blender
+
+A logistic regression maps `[logit(p_xgb), logit(p_gnn)]` to a final probability. It is fit on the validation time window (500 transactions): coefficients ≈ [0.91, 1.43], intercept ≈ −3.96.
+
+Transaction-level results on the test window (999 of 1,000 rows have a GNN score):
+
+| Scores | PR-AUC | ROC-AUC |
+|---|---|---|
+| XGBoost only | 0.740 | 0.877 |
+| GNN only | 0.805 | 0.894 |
+| Blended | 0.839 | 0.893 |
+
+A card without a GNN score serves as `mode="xgb_only"`. SHAP explanations describe the XGBoost component only; the blend changes the final probability, not the attribution.
+
 ## Drift monitoring
 
 `artifacts/demo/reference_features.parquet` stores the training distribution of all 13 features (3,500 rows). The drift job compares it to the most recent 500 scored transactions using Evidently's `DataDriftPreset`. Evidently chooses the per-column test from the window size: p-value tests (K-S, chi-square, Z-test) for small windows, and distance metrics (Jensen-Shannon, normalised Wasserstein) for larger ones. Each method's own threshold decides whether a column drifted. A drifted-column share at or above `DRIFT_SHARE_THRESHOLD` (default 0.50) creates one open retraining request. Fewer than 50 current rows reports `insufficient_data`.

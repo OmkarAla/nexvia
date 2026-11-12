@@ -1,4 +1,4 @@
-.PHONY: setup data train up down demo test lint
+.PHONY: setup data train gnn up down demo test lint
 
 setup:
 	python -m pip install -e ".[dev]"
@@ -8,6 +8,9 @@ data:
 
 train:
 	python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
+
+gnn:
+	python -m nexvia_fraud.models.gnn --data data/demo/transactions.csv --out artifacts/demo --run-id demo-gnn-001
 
 up:
 	docker compose up --build -d

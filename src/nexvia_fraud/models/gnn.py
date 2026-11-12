@@ -71,6 +71,23 @@ def _safe_auc(y: np.ndarray, scores: np.ndarray) -> float:
     return float(average_precision_score(y, scores))
 
 
+def score_cards_before(model_dir: str | Path, df: pd.DataFrame) -> dict[str, float]:
+    """Score cards using a graph built only from the supplied (past) rows."""
+    checkpoint = torch.load(Path(model_dir) / "gnn_model.pt", weights_only=False)
+    model = FraudSAGE(checkpoint["in_dims"], checkpoint["hidden"])
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()
+
+    graph = build_graph(df)
+    with torch.no_grad():
+        logits, _ = _forward(model, graph.data)
+    probabilities = torch.sigmoid(logits).numpy()
+    return {
+        str(card_id): float(score)
+        for card_id, score in zip(graph.cards["card_id"], probabilities, strict=False)
+    }
+
+
 def train_gnn(
     df: pd.DataFrame,
     out_dir: str | Path,
@@ -158,10 +175,25 @@ def train_gnn(
 
     test_cards = score_frame[score_frame["split"] == "test"]
     test_labels = full_graph.cards.set_index("card_id")["is_fraud"]
+
+    # Honest evaluation: embeddings come from a graph containing only rows
+    # before the test window. The full-graph scores above are for serving,
+    # where the nightly job sees everything up to the current day.
+    test_start = frame["event_time"].quantile(0.8)
+    past_graph = build_graph(frame[frame["event_time"] < test_start])
+    with torch.no_grad():
+        past_logits, _ = _forward(model, past_graph.data)
+    past_scores = {
+        str(card_id): float(score)
+        for card_id, score in zip(
+            past_graph.cards["card_id"], torch.sigmoid(past_logits).numpy(), strict=False
+        )
+    }
+    test_probabilities = [past_scores.get(card_id, 0.5) for card_id in test_cards["card_id"]]
     y_test = test_labels.reindex(test_cards["card_id"]).to_numpy()
-    pr_auc = _safe_auc(y_test, test_cards["gnn_score"].to_numpy())
+    pr_auc = _safe_auc(y_test, np.asarray(test_probabilities))
     roc_auc = (
-        float(roc_auc_score(y_test, test_cards["gnn_score"])) if len(np.unique(y_test)) > 1 else 0.0
+        float(roc_auc_score(y_test, test_probabilities)) if len(np.unique(y_test)) > 1 else 0.0
     )
 
     out = Path(out_dir)
@@ -190,7 +222,7 @@ def train_gnn(
             metrics[key] = 0.0
     (out / "gnn_metrics.json").write_text(json.dumps(metrics, indent=2))
 
-    blend = _fit_blend_from_validation(frame, validation_start, score_frame, out)
+    blend = _fit_blend_from_validation(frame, validation_start, out)
     if blend is not None:
         (out / "blend.json").write_text(json.dumps(blend, indent=2))
 
@@ -200,7 +232,6 @@ def train_gnn(
 def _fit_blend_from_validation(
     frame: pd.DataFrame,
     validation_start: pd.Timestamp,
-    score_frame: pd.DataFrame,
     out: Path,
 ) -> dict | None:
     """Fit the XGBoost/GNN blender on the validation time window."""
@@ -217,7 +248,7 @@ def _fit_blend_from_validation(
     validation = frame[
         (frame["event_time"] >= validation_start) & (frame["event_time"] < test_start)
     ]
-    gnn_lookup = dict(zip(score_frame["card_id"], score_frame["gnn_score"], strict=False))
+    gnn_lookup = score_cards_before(out, frame[frame["event_time"] < validation_start])
 
     xgb_prob: list[float] = []
     gnn_prob: list[float] = []

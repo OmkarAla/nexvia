@@ -10,7 +10,9 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 
 ## Model
 
-- **XGBoost only.** The GNN (GraphSAGE on a heterogeneous card/device/email/address graph) and the logistic stacker are the next phase. `mode` is always `xgb_only`.
+- **Graph is a snapshot.** Serving embeddings come from a graph containing all data up to the nightly job. Evaluation avoids future edges by using a pre-test graph. A streaming graph update is not implemented.
+- **GNN labels are card-level.** A card is fraudulent if any transaction in the training window is fraudulent. That captures card reuse, but it is not the same target as transaction-level fraud.
+- **Single-fold blender.** Blend weights are fit on one validation window, not on full out-of-fold folds across time.
 - **Hand-built features.** Feast (offline Parquet, online Redis, point-in-time joins) is not wired yet. `FeatureService` preserves the interface but recomputes from the demo frame in memory.
 - **Drift is covariate only.** Evidently compares feature distributions to the training reference. Concept drift (`P(y|x)` changing) and delayed-label performance are not observed. A drift breach raises a request; it is not proof of degradation.
 - **No calibration.** Scores are used as ranking and threshold inputs. A reliability diagram is not yet produced.

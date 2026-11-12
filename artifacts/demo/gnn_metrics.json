@@ -1,0 +1,13 @@
+{
+  "run_id": "demo-gnn-001",
+  "pr_auc": 0.5824712491738268,
+  "roc_auc": 0.6936708860759493,
+  "val_pr_auc": 0.6310608900862359,
+  "n_train_cards": 435,
+  "n_val_cards": 93,
+  "n_test_cards": 94,
+  "n_cards_total": 623,
+  "epochs_run": 13,
+  "seed": 7,
+  "validation_start": "2026-01-21T20:09:52.031114752+00:00"
+}

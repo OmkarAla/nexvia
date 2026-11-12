@@ -33,7 +33,7 @@ The API and the Kafka consumer call the same `score_transaction()` function. The
 | Layer | Choice |
 |---|---|
 | Stream | Kafka 3.7, KRaft mode, single broker |
-| Model | XGBoost (CPU), TreeSHAP contributions, early stopping on PR-AUC |
+| Model | XGBoost + GraphSAGE, logistic blend, TreeSHAP contributions, early stopping on PR-AUC |
 | API | FastAPI + Uvicorn |
 | Storage | PostgreSQL 16 (SQLite for local tests) |
 | Drift | Evidently `DataDriftPreset` against a committed training reference |
@@ -60,6 +60,7 @@ The `seed` service loads 600 demo transactions and creates alerts, so the queue 
 python -m pip install -e ".[dev]"
 python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv
 python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
+python -m nexvia_fraud.models.gnn --data data/demo/transactions.csv --out artifacts/demo --run-id demo-gnn-001
 python scripts/seed.py --limit 600
 python scripts/drift_job.py --once
 uvicorn nexvia_fraud.api.app:app --port 8000
@@ -98,8 +99,27 @@ Trained on the committed synthetic dataset (`data/demo/transactions.csv`, 5,000 
 | Test prevalence | 0.064 |
 | Test rows / fraud rows | 1,000 / 64 |
 | Train / validation / test | 3,500 / 500 / 1,000 |
-| Run ID | `demo-001` |
+| Run ID | `demo-001` / `demo-gnn-001` |
 | Best iteration | 17 of 300 (early stopping on validation) |
+
+Graph model, evaluated on unseen test cards with embeddings from a **pre-test graph** (no future edges):
+
+| Metric | Value |
+|---|---|
+| GNN card PR-AUC | 0.582 |
+| GNN card ROC-AUC | 0.694 |
+| GNN validation card PR-AUC | 0.631 |
+| GNN training cards / val / test | 435 / 93 / 94 |
+
+Transaction-level comparison on the same test rows (999 of 1,000 rows have a GNN score):
+
+| Scores | PR-AUC | ROC-AUC |
+|---|---|---|
+| XGBoost only | 0.740 | 0.877 |
+| GNN only | 0.805 | 0.894 |
+| **Blended** | **0.839** | 0.893 |
+
+The blender is fit on the validation window (`coef ≈ [0.91, 1.43]`, intercept ≈ −3.96). Cards missing from the GNN score table fall back to `mode="xgb_only"`; the dashboard shows which path ran. SHAP still explains only the XGBoost component.
 
 Source of truth: `artifacts/demo/metrics.json` and `reports/metrics.json`. Early stopping uses a time-ordered validation slice carved out of the training window; the final 20% is untouched until metrics are computed. The model is trained on **synthetic data with injected fraud rings, entity evasion, shared-device false positives, and 1% label noise** — not on real transactions.
 
@@ -132,7 +152,7 @@ tests/          unit + integration (Kafka/Postgres opt-in)
 ## Tests
 
 ```bash
-python -m pytest -m "not integration" -q   # unit, 62 tests
+python -m pytest -m "not integration" -q   # unit, 71 tests
 python -m pytest -m integration -q          # needs KAFKA_BOOTSTRAP
 cd dashboard && npm test && npm run build
 ```

@@ -108,6 +108,23 @@ erDiagram
     DRIFT_REPORTS ||--o{ RETRAINING_REQUESTS : "raises"
 ```
 
+## Graph model and blend
+
+```mermaid
+flowchart LR
+    T[training transactions] --> G[HeteroData<br/>card · device · email · addr]
+    G --> S[GraphSAGE<br/>2 × SAGEConv]
+    S --> P[gnn_card_scores.parquet]
+    X[XGBoost probability] --> B[logistic blend<br/>log-odds]
+    P --> B
+    B --> O[final score<br/>mode = blended]
+    X --> F[fallback<br/>mode = xgb_only]
+```
+
+- GraphSAGE is trained on cards from the training window with a seeded 70/15/15 card split, so test cards are unseen.
+- Evaluation uses embeddings from a graph built only from rows before the test window. Serving uses a nightly full-graph precompute; that is a freshness/leakage trade-off documented in the model card.
+- The blender is a two-coefficient logistic regression fit on the validation window. A card with no GNN score falls back to XGBoost-only, and the response says which path ran.
+
 ## Drift flow
 
 ```mermaid
