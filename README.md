@@ -1,20 +1,149 @@
 # nexvia-fraud
 
-Real-time transaction fraud scoring with a Kafka stream, an XGBoost scorer, and an analyst review dashboard.
+Real-time transaction fraud scoring: a replayed Kafka stream, an XGBoost scorer with TreeSHAP explanations, and an analyst case-review dashboard.
 
-**Status:** vertical slice in progress. Everything here runs on synthetic demo data; no Kaggle credentials are required.
+> **Education project.** Synthetic data only. Not a production fraud engine, and not a substitute for one.
 
-> Education project. Not a production fraud system. Scores are illustrative.
+**Status:** vertical slice. Kafka → scorer → Postgres → dashboard works end to end. Feast, the GNN, drift monitoring, retraining, and Kubernetes are the next phase (see `docs/limitations.md`).
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    CSV[demo transactions CSV] --> P[producer<br/>replay at N/s]
+    P -->|transactions.raw| K[(Kafka KRaft)]
+    K --> C[consumer]
+    C --> F[FeatureService<br/>point-in-time]
+    F --> S[XGBoost + TreeSHAP]
+    S --> DB[(Postgres)]
+    S -->|score >= threshold| A[alerts]
+    DB --> API[FastAPI]
+    API --> UI[React dashboard]
+    A --> DB
+```
+
+The API and the Kafka consumer call the same `score_transaction()` function. There is one definition of scoring and one idempotency key (`transaction_id`).
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Stream | Kafka 3.7, KRaft mode, single broker |
+| Model | XGBoost (CPU), TreeSHAP contributions, early stopping on PR-AUC |
+| API | FastAPI + Uvicorn |
+| Storage | PostgreSQL 16 (SQLite for local tests) |
+| Dashboard | React 18 + Vite + TypeScript (strict) |
+| Packaging | Docker Compose, GitHub Actions |
 
 ## Quickstart
 
+Requirements: Docker Desktop with Compose.
+
 ```bash
-make setup
-make data
-make train
-make up
+docker compose up --build
 ```
 
-Then open the dashboard at http://localhost:5173 and the API docs at http://localhost:8000/docs.
+- Dashboard: <http://localhost:5173>
+- API docs: <http://localhost:8000/docs>
+- Health: <http://localhost:8000/health>
 
-See `docs/architecture.md` for the design, `docs/model-card.md` for metrics, and `docs/limitations.md` for what this does not do.
+The `seed` service loads 600 demo transactions and creates alerts, so the queue is populated even before the producer starts. The producer then replays the stream at 2 transactions/second.
+
+### Without Docker
+
+```bash
+python -m pip install -e ".[dev]"
+python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv
+python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
+python scripts/seed.py --limit 600
+uvicorn nexvia_fraud.api.app:app --port 8000
+```
+
+In a second terminal:
+
+```bash
+cd dashboard && npm install && npm run dev
+```
+
+Kafka and the consumer require Docker Compose; the API, scorer, and dashboard do not.
+
+## Demo script (5 minutes)
+
+1. Open the dashboard. Point out the banner: synthetic demo, not a production engine.
+2. **Live feed** — transactions arriving from the producer, with scores.
+3. **Case queue** — filter by minimum score. Pick an alert with a high score.
+4. **Case detail** — amount, card, prior cases, and the SHAP bars showing which features pushed the score up or down.
+5. Enter a reason, click **Reject** (or Approve). The status changes and an audit hash is shown.
+6. `GET /audit` returns the hash-chained log with `valid: true`.
+7. `GET /metrics` shows request count and in-process p50/p95/p99.
+
+## Model and results
+
+Trained on the committed synthetic dataset (`data/demo/transactions.csv`, 5,000 rows, time-ordered split 80/20).
+
+| Metric | Value |
+|---|---|
+| PR-AUC | **0.771** |
+| ROC-AUC | 0.893 |
+| Precision @ 1% FPR | 0.852 |
+| Recall @ 1% FPR | 0.719 |
+| Precision @ 100 | 0.49 |
+| Test prevalence | 0.064 |
+| Test rows / fraud rows | 1,000 / 64 |
+| Run ID | `demo-001` |
+| Best iteration | 43 of 300 (early stopping) |
+
+Source of truth: `artifacts/demo/metrics.json` and `reports/metrics.json`. The model is trained on **synthetic data with injected fraud rings, entity evasion, shared-device false positives, and 1% label noise** — not on real transactions.
+
+## Latency
+
+Measured on the development machine (Windows 11, CPU-only, single Uvicorn worker, SQLite), 300 sequential requests to `/score`:
+
+| p50 | p95 | p99 | Mean | Sequential throughput |
+|---|---|---|---|---|
+| 18.8 ms | 23.2 ms | 40.8 ms | 19.5 ms | ~51 req/s |
+
+This is a demo-scale number, not a capacity claim. It includes feature computation, model inference, SHAP, and the database write.
+
+## Repository layout
+
+```
+src/nexvia_fraud/
+  api/          FastAPI app, schemas, metrics
+  audit/        hash-chained audit log
+  data/         deterministic synthetic data generator
+  db/           SQLAlchemy models, repository, engine helpers
+  features/     point-in-time feature service
+  models/       training and scoring
+  streaming/    Kafka producer/consumer and transports
+dashboard/      React + Vite UI
+scripts/        seed, replay, benchmark
+tests/          unit + integration (Kafka/Postgres opt-in)
+```
+
+## Tests
+
+```bash
+python -m pytest -m "not integration" -q   # unit, ~40 tests
+python -m pytest -m integration -q          # needs KAFKA_BOOTSTRAP
+cd dashboard && npm test && npm run build
+```
+
+The integration test publishes a real message through Kafka, consumes it, scores it, and asserts the row exists.
+
+## Documentation
+
+- `docs/architecture.md` — components and request paths
+- `docs/api.md` — endpoints and payloads
+- `docs/model-card.md` — data, metrics, intended use
+- `docs/limitations.md` — bias, leakage risks, non-goals
+
+## Data and licensing
+
+No Kaggle or medical data is redistributed. The demo dataset is generated by `src/nexvia_fraud/data/generate_demo.py` and is clearly synthetic. The design notes call for IEEE-CIS via the user's Kaggle credentials in the depth phase.
+
+## Ethics
+
+Fraud scores affect people. This project exists to demonstrate engineering, not to make decisions about real accounts. Any deployment would need fairness evaluation, human review, appeal paths, and regulatory review that this demo does not provide.

@@ -45,3 +45,18 @@ def test_scoring_is_deterministic(scorer):
     second = scorer.score(features)
     assert first.score == second.score
     assert first.top_features == second.top_features
+
+
+def test_scorer_uses_best_iteration(scorer):
+    import numpy as np
+    import xgboost as xgb
+
+    assert scorer.best_iteration >= 0
+    features = {name: 0.5 for name in scorer.feature_names}
+    values = np.asarray([[features[name] for name in scorer.feature_names]], dtype=np.float32)
+    expected = float(
+        scorer._booster.predict(
+            xgb.DMatrix(values), iteration_range=(0, scorer.best_iteration + 1)
+        )[0]
+    )
+    assert scorer.score(features).score == pytest.approx(expected)
