@@ -8,7 +8,16 @@ from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from nexvia_fraud.audit.chain import GENESIS, append_audit
-from nexvia_fraud.db.models import Alert, AuditHead, AuditLog, Decision, Transaction, utcnow
+from nexvia_fraud.db.models import (
+    Alert,
+    AuditHead,
+    AuditLog,
+    Decision,
+    DriftReport,
+    RetrainingRequest,
+    Transaction,
+    utcnow,
+)
 from nexvia_fraud.timeutil import to_utc
 
 _UPSERT_COLUMNS = (
@@ -167,3 +176,76 @@ def list_audit(session: Session, limit: int = 200) -> list[AuditLog]:
 def list_transactions(session: Session, limit: int = 100) -> list[Transaction]:
     query = select(Transaction).order_by(Transaction.event_time.desc()).limit(limit)
     return list(session.scalars(query))
+
+
+def save_drift_report(session: Session, summary: dict) -> DriftReport:
+    report = DriftReport(
+        id=uuid4().hex,
+        drift_share=float(summary["drift_share"]),
+        dataset_drift=bool(summary["dataset_drift"]),
+        n_reference=int(summary["n_reference"]),
+        n_current=int(summary["n_current"]),
+        summary=summary,
+    )
+    session.add(report)
+    session.commit()
+    session.refresh(report)
+    return report
+
+
+def latest_drift_report(session: Session) -> DriftReport | None:
+    query = (
+        select(DriftReport)
+        .order_by(DriftReport.created_at.desc(), DriftReport.id.desc())
+        .limit(1)
+    )
+    return session.scalar(query)
+
+
+def create_retraining_request_if_absent(
+    session: Session, drift_report_id: str, reason: str
+) -> RetrainingRequest | None:
+    existing = session.scalar(
+        select(RetrainingRequest).where(RetrainingRequest.status == "open").limit(1)
+    )
+    if existing is not None:
+        return None
+
+    request = RetrainingRequest(
+        id=uuid4().hex,
+        drift_report_id=drift_report_id,
+        reason=reason,
+        status="open",
+    )
+    session.add(request)
+    session.commit()
+    session.refresh(request)
+    return request
+
+
+def list_retraining_requests(session: Session, limit: int = 50) -> list[RetrainingRequest]:
+    query = (
+        select(RetrainingRequest)
+        .order_by(RetrainingRequest.created_at.desc())
+        .limit(limit)
+    )
+    return list(session.scalars(query))
+
+
+def resolve_retraining_request(
+    session: Session, request_id: str, status: str, resolved_by: str
+) -> RetrainingRequest:
+    if status not in {"approved", "rejected"}:
+        raise ValueError("status must be 'approved' or 'rejected'")
+    request = session.get(RetrainingRequest, request_id)
+    if request is None:
+        raise ValueError("request not found")
+    if request.status != "open":
+        raise ValueError("request already resolved")
+
+    request.status = status
+    request.resolved_by = resolved_by
+    request.resolved_at = utcnow()
+    session.commit()
+    session.refresh(request)
+    return request

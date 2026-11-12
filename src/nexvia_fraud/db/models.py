@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -72,3 +72,29 @@ class AuditHead(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     hash: Mapped[str] = mapped_column(String(64))
+
+
+class DriftReport(Base):
+    __tablename__ = "drift_reports"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    drift_share: Mapped[float] = mapped_column(Float)
+    dataset_drift: Mapped[bool] = mapped_column(Boolean)
+    n_reference: Mapped[int] = mapped_column(Integer)
+    n_current: Mapped[int] = mapped_column(Integer)
+    summary: Mapped[dict] = mapped_column(JSON)
+
+
+class RetrainingRequest(Base):
+    __tablename__ = "retraining_requests"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    drift_report_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("drift_reports.id"), index=True
+    )
+    reason: Mapped[str] = mapped_column(String(512))
+    status: Mapped[str] = mapped_column(String(16), default="open", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    resolved_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
