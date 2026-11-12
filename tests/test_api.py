@@ -133,3 +133,9 @@ def test_metrics_endpoint(client, demo_df):
     text = client.get("/metrics").text
     assert "fraud_score_requests_total" in text
     assert 'fraud_score_latency_seconds{quantile="0.99"}' in text
+
+
+def test_recent_transactions_endpoint(client, demo_df):
+    client.post("/score", json=_payload(demo_df.iloc[0], transaction_id="feed-1"))
+    body = client.get("/transactions").json()
+    assert any(item["transaction_id"] == "feed-1" for item in body["transactions"])

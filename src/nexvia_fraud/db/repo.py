@@ -147,3 +147,8 @@ def decide(
 
 def list_audit(session: Session, limit: int = 200) -> list[AuditLog]:
     return list(session.scalars(select(AuditLog).order_by(AuditLog.id.asc()).limit(limit)))
+
+
+def list_transactions(session: Session, limit: int = 100) -> list[Transaction]:
+    query = select(Transaction).order_by(Transaction.event_time.desc()).limit(limit)
+    return list(session.scalars(query))

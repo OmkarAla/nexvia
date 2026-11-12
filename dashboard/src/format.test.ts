@@ -1,5 +1,5 @@
-import { buildAlertQuery } from "../api";
-import { formatMoney, formatScore, scoreTone } from "../format";
+import { buildAlertQuery } from "./api";
+import { formatMoney, formatScore, scoreTone } from "./format";
 
 describe("formatScore", () => {
   it("renders one decimal percent", () => {

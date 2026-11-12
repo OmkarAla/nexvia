@@ -28,6 +28,7 @@ from nexvia_fraud.db.repo import (
     get_alert,
     list_alerts,
     list_audit,
+    list_transactions,
 )
 from nexvia_fraud.features.service import FeatureService
 from nexvia_fraud.models.scorer import Scorer
@@ -67,6 +68,13 @@ def create_app(
     @app.get("/health")
     def health() -> dict:
         return {"status": "ok", "model_version": scorer.model_version}
+
+    @app.get("/transactions")
+    def transactions(limit: int = Query(default=100, ge=1, le=500)) -> dict:
+        with session_factory() as session:
+            rows = list_transactions(session, limit)
+            return {"transactions": [_transaction_payload(row) for row in rows]}
+
 
     @app.post("/score", response_model=ScoreResponse)
     def score(request: ScoreRequest) -> ScoreResponse:
