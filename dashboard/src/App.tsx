@@ -1,18 +1,37 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { decide, getAlert, getAlerts, getHealth, getTransactions } from "./api";
+import {
+  decide,
+  getAlert,
+  getAlerts,
+  getDriftLatest,
+  getHealth,
+  getRetrainingRequests,
+  getTransactions,
+  resolveRetrainingRequest,
+} from "./api";
 import { AlertQueue } from "./components/AlertQueue";
 import { CaseDetail } from "./components/CaseDetail";
 import { LiveFeed } from "./components/LiveFeed";
-import type { Alert, AlertDetail, Health, Transaction } from "./types";
+import { ModelHealth } from "./components/ModelHealth";
+import type {
+  Alert,
+  AlertDetail,
+  DriftReport,
+  Health,
+  RetrainingRequest,
+  Transaction,
+} from "./types";
 
-type Tab = "cases" | "feed";
+type Tab = "cases" | "feed" | "model";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("cases");
   const [health, setHealth] = useState<Health | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [drift, setDrift] = useState<DriftReport | null>(null);
+  const [requests, setRequests] = useState<RetrainingRequest[]>([]);
   const [selected, setSelected] = useState<AlertDetail | null>(null);
   const [status, setStatus] = useState("open");
   const [minScore, setMinScore] = useState(0.5);
@@ -21,12 +40,16 @@ export default function App() {
 
   const refresh = useCallback(async () => {
     try {
-      const [alertPage, transactionPage] = await Promise.all([
+      const [alertPage, transactionPage, driftPage, requestPage] = await Promise.all([
         getAlerts({ status: status || undefined, minScore, limit: 100 }),
         getTransactions(80),
+        getDriftLatest(),
+        getRetrainingRequests(),
       ]);
       setAlerts(alertPage.alerts);
       setTransactions(transactionPage.transactions);
+      setDrift(driftPage.report);
+      setRequests(requestPage.requests);
       setError(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
@@ -71,6 +94,15 @@ export default function App() {
     }
   }
 
+  async function resolveRequest(id: string, status: "approved" | "rejected") {
+    try {
+      await resolveRetrainingRequest(id, { status, resolved_by: "demo-analyst" });
+      await refresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+    }
+  }
+
   return (
     <div className="app">
       <header className="topbar">
@@ -112,12 +144,21 @@ export default function App() {
         >
           Live feed
         </button>
+        <button
+          type="button"
+          className={tab === "model" ? "active" : ""}
+          onClick={() => setTab("model")}
+        >
+          Model health
+        </button>
       </nav>
 
       <main>
-        {tab === "feed" ? (
-          <LiveFeed transactions={transactions} />
-        ) : (
+        {tab === "feed" && <LiveFeed transactions={transactions} />}
+        {tab === "model" && (
+          <ModelHealth report={drift} requests={requests} onResolve={resolveRequest} />
+        )}
+        {tab === "cases" && (
           <div className="split">
             <AlertQueue
               alerts={alerts}

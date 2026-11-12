@@ -504,3 +504,115 @@ footer {
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
+
+.model-grid {
+  display: grid;
+  grid-template-columns: minmax(380px, 1.1fr) minmax(320px, 0.9fr);
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .model-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.drift-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 4px 0 10px;
+}
+
+.drift-value {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.drift-stable {
+  color: var(--ok);
+}
+
+.drift-watch {
+  color: var(--warn);
+}
+
+.drift-drifted {
+  color: var(--danger);
+}
+
+.drift-track {
+  height: 10px;
+  background: #0a1220;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.drift-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 400ms ease;
+}
+
+.drift-fill.drift-stable {
+  background: linear-gradient(90deg, #34d399, #10b981);
+}
+
+.drift-fill.drift-watch {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.drift-fill.drift-drifted {
+  background: linear-gradient(90deg, #fb7185, #ef4444);
+}
+
+.drift-table {
+  margin-top: 16px;
+}
+
+.request-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.request {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  background: #0c1524;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+
+.request-main {
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+}
+
+.request-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.request-actions button {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.request-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
