@@ -2,6 +2,13 @@
 
 Date: 2026-11-11
 Status: Draft for approval
+
+> **Update 2026-11-13 — submission constraint supersedes the two-repo decision.**
+> The evaluation allows a single GitHub URL and asks for subfolders per project.
+> Both projects now live in one repository: `nexvia-fraud/` and `nexvia-imaging/`.
+> §4 approach 3 (shared monorepo, rejected) and §7 are superseded on this point;
+> the fraud history was imported with `git subtree`, and each folder keeps its own
+> README, tests, and tooling.
 Scope: `nexvia-fraud` and `nexvia-imaging`, two independent repositories, both submitted by 2026-12-15.
 
 ---

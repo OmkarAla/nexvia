@@ -1,3 +1,18 @@
+# Next Session Handoff — 2026-11-13 (updated)
+
+## Submission constraint change
+
+- The evaluation allows **one GitHub URL** with subfolders per project.
+- Both projects now live under `D:
+exvia`: `nexvia-fraud/` (built) and `nexvia-imaging/` (scaffold).
+- The standalone `D:
+exvia-fraud` folder is a leftover copy; make changes in `D:
+exvia
+exvia-fraud` from now on.
+- CI moved to the repository root: `.github/workflows/fraud-ci.yml`.
+
+---
+
 # Next Session Handoff — 2026-11-12
 
 ## Where we are
