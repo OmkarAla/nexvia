@@ -1,6 +1,6 @@
 # AIML-02 — Nexvia Imaging
 
-AI-assisted medical imaging. Submission folder: `AIML-02` (imaging brief).
+AI-assisted medical imaging. Submission folder: `AIML-02` (imaging brief, course project 1).
 
 > **Status: scaffold.** Scope is defined in the design document; implementation has not started.
 >

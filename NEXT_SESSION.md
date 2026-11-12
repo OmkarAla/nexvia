@@ -2,6 +2,7 @@
 
 ## Submission constraint change
 
+- Mapping: `AIML-01` = course project 2 = Nexvia Fraud; `AIML-02` = course project 1 = Nexvia Imaging.
 - The evaluation allows **one GitHub URL** with subfolders per project.
 - Both projects now live under `D:
 exvia`: `AIML-01/` (fraud, built) and `AIML-02/` (imaging, scaffold).

@@ -2,10 +2,10 @@
 
 Single submission repository containing both allotted projects. Each project lives in its own folder with its own README, tests, and deliverables.
 
-| Folder | Brief | Project | Status |
-|---|---|---|---|
-| [`AIML-01/`](AIML-01/) | AIML-01 | Nexvia Fraud — real-time fraud detection | **Built** |
-| [`AIML-02/`](AIML-02/) | AIML-02 | Nexvia Imaging — medical imaging | **Next** |
+| Folder | Brief | Course project | Project | Status |
+|---|---|---|---|---|
+| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud — real-time fraud detection | **Built** |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging — medical imaging | **Next** |
 
 > Both are education projects. The fraud system runs on synthetic data; the imaging system will use public research datasets with an explicit "not for clinical use" notice.
 
@@ -13,7 +13,7 @@ Single submission repository containing both allotted projects. Each project liv
 
 ```
 .
-├── AIML-01/               # project 1: fraud (complete)
+├── AIML-01/               # project 2: fraud (complete)
 │   ├── src/nexvia_fraud/  # API, streaming, features, models, drift, audit
 │   ├── dashboard/         # React + Vite review UI
 │   ├── tests/             # unit + integration
@@ -21,7 +21,7 @@ Single submission repository containing both allotted projects. Each project liv
 │   ├── docker-compose.yml
 │   ├── k8s/               # Kustomize manifests
 │   └── docs/              # architecture, API, model card, limitations
-├── AIML-02/               # project 2: imaging (scaffold)
+├── AIML-02/               # project 1: imaging (scaffold)
 ├── docs/superpowers/      # design spec and implementation plans
 ├── .github/workflows/     # CI for the whole repository
 └── README.md
