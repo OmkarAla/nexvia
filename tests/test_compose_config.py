@@ -24,6 +24,7 @@ def test_compose_defines_the_full_stack():
     assert {
         "postgres",
         "kafka",
+        "redis",
         "seed",
         "api",
         "consumer",

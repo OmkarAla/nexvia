@@ -92,10 +92,9 @@ def test_share_counts_capture_rings():
 def test_unknown_card_defaults():
     service = FeatureService.from_dataframe(_fixture())
     f = service.get_features("nope", pd.Timestamp("2026-01-01T00:30:00Z"), 5.0, "d9", "b.com", "y")
-    assert f["velocity_1h"] == 0.0
-    assert f["amount_zscore"] == 0.0
-    assert f["seconds_since_last_txn"] == -1.0
-    assert f["device_share_count"] == 0.0
+    expected = {name: 0.0 for name in EXPECTED_NAMES}
+    expected["seconds_since_last_txn"] = -1.0
+    assert f == expected
 
 
 def test_naive_event_time_rejected():

@@ -35,7 +35,9 @@ def score_transaction(
         "top_features": result.top_features,
     }
 
-    with session_factory() as session:
+    # One transaction boundary: a scored row and its alert are committed
+    # together, so a crash cannot persist one without the other.
+    with session_factory() as session, session.begin():
         upsert_transaction(session, record)
         if result.score >= threshold:
             create_alert_if_absent(session, payload["transaction_id"], result.score)

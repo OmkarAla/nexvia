@@ -86,6 +86,7 @@ export function CaseDetail({ detail, auditHash, onDecide }: Props) {
             onChange={(event) => setReason(event.target.value)}
             placeholder="Reason (required, written to the audit log)"
             rows={3}
+            maxLength={512}
           />
           <div className="actions">
             <button

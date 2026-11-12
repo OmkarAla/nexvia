@@ -139,3 +139,31 @@ def test_recent_transactions_endpoint(client, demo_df):
     client.post("/score", json=_payload(demo_df.iloc[0], transaction_id="feed-1"))
     body = client.get("/transactions").json()
     assert any(item["transaction_id"] == "feed-1" for item in body["transactions"])
+
+
+def test_naive_event_time_is_422(client, demo_df):
+    body = _payload(demo_df.iloc[0], transaction_id="naive-1")
+    body["event_time"] = "2026-01-02T00:00:00"
+    response = client.post("/score", json=body)
+    assert response.status_code == 422
+
+
+def test_non_finite_amount_is_rejected(client, demo_df):
+    from pydantic import ValidationError
+
+    from nexvia_fraud.api.schemas import ScoreRequest
+
+    body = _payload(demo_df.iloc[0], transaction_id="inf-1")
+    body["amount"] = float("inf")
+    with pytest.raises(ValidationError):
+        ScoreRequest(**body)
+
+
+def test_timestamps_are_normalized_to_utc_z(client, demo_df):
+    body = _payload(demo_df.iloc[0], transaction_id="tz-1")
+    body["event_time"] = "2026-01-02T05:30:00+05:30"
+    assert client.post("/score", json=body).status_code == 200
+
+    listing = client.get("/transactions").json()["transactions"]
+    stored = next(item for item in listing if item["transaction_id"] == "tz-1")
+    assert stored["event_time"] == "2026-01-02T00:00:00Z"

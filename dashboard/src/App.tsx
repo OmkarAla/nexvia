@@ -67,6 +67,7 @@ export default function App() {
       await refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
+      throw cause;
     }
   }
 
@@ -128,6 +129,7 @@ export default function App() {
               onMinScoreChange={setMinScore}
             />
             <CaseDetail
+              key={selected?.alert.id ?? "empty"}
               detail={selected}
               auditHash={auditHash}
               onDecide={submitDecision}

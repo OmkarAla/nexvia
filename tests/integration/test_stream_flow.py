@@ -5,10 +5,11 @@ import uuid
 
 import pandas as pd
 import pytest
+from sqlalchemy import select
 
 from nexvia_fraud.config import Settings
 from nexvia_fraud.db.engine import make_engine, make_session_factory
-from nexvia_fraud.db.models import Transaction
+from nexvia_fraud.db.models import Alert, Transaction
 from nexvia_fraud.db.repo import init_db
 from nexvia_fraud.features.service import FeatureService
 from nexvia_fraud.models.scorer import Scorer
@@ -75,4 +76,10 @@ def test_publish_consume_score_persist():
         consumer.close()
 
     with session_factory() as session:
-        assert session.get(Transaction, transaction_id) is not None
+        stored = session.get(Transaction, transaction_id)
+        assert stored is not None
+        assert 0.0 <= stored.score <= 1.0
+        assert stored.model_version
+        alert = session.scalar(select(Alert).where(Alert.transaction_id == transaction_id))
+        assert alert is not None
+        assert alert.status == "open"

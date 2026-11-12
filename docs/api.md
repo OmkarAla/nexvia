@@ -2,7 +2,7 @@
 
 Base URL: `http://localhost:8000`. Interactive docs at `/docs`.
 
-All timestamps are ISO-8601 UTC.
+All timestamps are ISO-8601 UTC with a `Z` suffix; inputs with another offset are converted to UTC.
 
 ## GET /health
 
@@ -27,6 +27,8 @@ Scores one transaction and persists it. Raises an alert when the score is at or 
 ```
 
 `device_id`, `email_domain`, and `addr_id` are optional and default to `unknown-*`.
+
+A naive `event_time` (no offset) is rejected with `422`; aware timestamps are normalized to UTC and returned with a `Z` suffix.
 
 Response:
 

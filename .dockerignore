@@ -9,3 +9,4 @@ node_modules
 dashboard/dist
 data/raw
 data/processed
+data/*.db

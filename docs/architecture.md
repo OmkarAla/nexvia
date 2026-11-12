@@ -95,7 +95,7 @@ erDiagram
 
 ## Audit chain
 
-Each row hashes `prev_hash || canonical_json(payload)`. Verification walks the chain from the genesis value and compares every link. Mutation of any row breaks its hash and every subsequent link. Truncation of the tail is **not** detectable without an externally anchored head — documented in `docs/limitations.md`.
+Each row hashes `prev_hash || canonical_json(payload)`, and a singleton head row stores the latest hash under a row lock. Verification walks the chain from the genesis value and then compares the final link to the head. Mutation of a payload, or deletion of the tail, breaks verification. An attacker who can write both `audit_log` and `audit_head` can still rewrite history — external anchoring is not implemented (see `docs/limitations.md`).
 
 ## Deployment topology (hosted, later phase)
 

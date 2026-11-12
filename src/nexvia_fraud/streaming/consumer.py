@@ -24,6 +24,36 @@ def handle_message(
     return score_transaction(raw, features, scorer, session_factory, settings.alert_threshold)
 
 
+def consume_one(
+    consumer: Consumer,
+    features: FeatureService,
+    scorer: Scorer,
+    session_factory,
+    settings: Settings,
+) -> bool:
+    """Process at most one message.
+
+    Returns True when a message was handled. Malformed JSON is committed and
+    skipped (poison pill); processing failures propagate *without* committing,
+    so a restarted consumer replays the message instead of losing it.
+    """
+    item = consumer.poll(1.0)
+    if item is None:
+        return False
+
+    _topic, value = item
+    try:
+        raw = json.loads(value)
+    except json.JSONDecodeError:
+        logger.exception("malformed message; committing and skipping")
+        consumer.commit()
+        return True
+
+    handle_message(raw, features, scorer, session_factory, settings)
+    consumer.commit()
+    return True
+
+
 def run(
     consumer: Consumer,
     features: FeatureService,
@@ -32,14 +62,4 @@ def run(
     settings: Settings,
 ) -> None:
     while True:
-        item = consumer.poll(1.0)
-        if item is None:
-            continue
-
-        _topic, value = item
-        try:
-            raw = json.loads(value)
-            handle_message(raw, features, scorer, session_factory, settings)
-        except Exception:
-            logger.exception("failed to process message; committing to avoid a poison-pill loop")
-        consumer.commit()
+        consume_one(consumer, features, scorer, session_factory, settings)

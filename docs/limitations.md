@@ -6,7 +6,7 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 
 - **Synthetic only.** The demo generator injects rings, evasion, shared-entity false positives, and label noise, but it is still a simulation. Metrics do not transfer to IEEE-CIS or real traffic.
 - **No delayed labels.** Real chargebacks arrive weeks later; this demo has labels at event time.
-- **One time split.** The held-out window is the final 20% by time. There is no rolling-origin validation or backtest across quarters.
+- **One chronological holdout.** Train/validation/test are sequential slices of one window. There is no rolling-origin validation or backtest across quarters.
 
 ## Model
 
@@ -25,7 +25,7 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 
 - **No authentication.** The design calls for a seeded demo JWT with three roles; the slice ships without auth and must not be exposed publicly as-is.
 - **No rate limiting** and no request size limits beyond Pydantic validation.
-- **Audit chain truncation is undetectable.** A deleted tail leaves a valid chain. A real system anchors the head externally or signs checkpoints.
+- **Audit chain truncation is detectable only through the stored head row.** The chain verifier checks the head hash, so deleting a tail row breaks verification unless an attacker also edits `audit_head` in the same database. External anchoring is not implemented.
 - **Dashboard has two views.** There is no separate model/drift page, audit page, or linked-entity graph yet; the audit is available via `/audit`.
 
 ## Operations

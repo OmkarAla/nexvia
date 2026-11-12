@@ -45,7 +45,8 @@ class Scorer:
         if metrics_path.exists():
             metrics = json.loads(metrics_path.read_text())
             version = metrics.get("model_version") or metrics.get("run_id") or "unknown"
-            best_iteration = int(metrics.get("best_iteration", -1))
+            best = metrics.get("best_iteration")
+            best_iteration = int(best) if best is not None else -1
 
         return cls(booster, feature_names, version, best_iteration)
 

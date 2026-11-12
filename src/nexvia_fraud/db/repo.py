@@ -2,70 +2,86 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
-from nexvia_fraud.audit.chain import append_audit
-from nexvia_fraud.db.models import Alert, AuditLog, Decision, Transaction, utcnow
+from nexvia_fraud.audit.chain import GENESIS, append_audit
+from nexvia_fraud.db.models import Alert, AuditHead, AuditLog, Decision, Transaction, utcnow
+from nexvia_fraud.timeutil import to_utc
+
+_UPSERT_COLUMNS = (
+    "card_id",
+    "event_time",
+    "amount",
+    "features",
+    "explanation",
+    "score",
+    "mode",
+    "model_version",
+)
+
+
+def _insert_for(session: Session, model):
+    dialect = session.get_bind().dialect.name
+    if dialect == "postgresql":
+        from sqlalchemy.dialects.postgresql import insert
+
+        return insert(model)
+    if dialect == "sqlite":
+        from sqlalchemy.dialects.sqlite import insert
+
+        return insert(model)
+    raise NotImplementedError(f"upsert not implemented for dialect {dialect}")
 
 
 def init_db(engine) -> None:
     from nexvia_fraud.db.models import Base
 
     Base.metadata.create_all(engine)
-
-
-def _as_datetime(value: datetime | str) -> datetime:
-    if isinstance(value, datetime):
-        return value
-    return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    with Session(engine) as session:
+        if session.get(AuditHead, 1) is None:
+            session.add(AuditHead(id=1, hash=GENESIS))
+            session.commit()
 
 
 def upsert_transaction(session: Session, payload: dict) -> Transaction:
-    transaction_id = payload["transaction_id"]
-    transaction = session.get(Transaction, transaction_id)
-    if transaction is None:
-        transaction = Transaction(
-            id=transaction_id,
-            card_id=payload["card_id"],
-            event_time=_as_datetime(payload["event_time"]),
-            amount=float(payload["amount"]),
-            features=payload.get("features") or {},
-            explanation=payload.get("top_features") or [],
-            score=float(payload["score"]),
-            mode=payload.get("mode", "xgb_only"),
-            model_version=payload.get("model_version", "unknown"),
-        )
-        session.add(transaction)
-    else:
-        transaction.score = float(payload["score"])
-        transaction.mode = payload.get("mode", transaction.mode)
-        transaction.model_version = payload.get("model_version", transaction.model_version)
-        transaction.features = payload.get("features") or transaction.features
-        transaction.explanation = payload.get("top_features") or transaction.explanation
-    session.commit()
-    session.refresh(transaction)
-    return transaction
+    values = {
+        "id": payload["transaction_id"],
+        "card_id": payload["card_id"],
+        "event_time": to_utc(payload["event_time"]),
+        "amount": float(payload["amount"]),
+        "features": payload.get("features") or {},
+        "explanation": payload.get("top_features") or [],
+        "score": float(payload["score"]),
+        "mode": payload.get("mode", "xgb_only"),
+        "model_version": payload.get("model_version", "unknown"),
+    }
+    statement = _insert_for(session, Transaction).values(**values)
+    statement = statement.on_conflict_do_update(
+        index_elements=["id"],
+        set_={name: getattr(statement.excluded, name) for name in _UPSERT_COLUMNS},
+    )
+    session.execute(statement)
+    return session.get(Transaction, payload["transaction_id"], populate_existing=True)
 
 
 def create_alert_if_absent(session: Session, transaction_id: str, score: float) -> Alert | None:
-    existing = session.scalar(select(Alert).where(Alert.transaction_id == transaction_id))
-    if existing is not None:
-        return None
-
-    alert = Alert(
-        id=uuid4().hex,
-        transaction_id=transaction_id,
-        score=float(score),
-        status="open",
+    statement = (
+        _insert_for(session, Alert)
+        .values(
+            id=uuid4().hex,
+            transaction_id=transaction_id,
+            score=float(score),
+            status="open",
+        )
+        .on_conflict_do_nothing(index_elements=["transaction_id"])
     )
-    session.add(alert)
-    session.commit()
-    session.refresh(alert)
-    return alert
+    result = session.execute(statement)
+    if result.rowcount == 0:
+        return None
+    return session.scalar(select(Alert).where(Alert.transaction_id == transaction_id))
 
 
 def list_alerts(
@@ -105,16 +121,18 @@ def decide(session: Session, alert_id: str, decision: str, reason: str, analyst:
     if not analyst.strip():
         raise ValueError("analyst is required")
 
-    alert = session.get(Alert, alert_id, with_for_update=True)
+    alert = session.get(Alert, alert_id)
     if alert is None:
         raise ValueError("alert not found")
-    if alert.status != "open":
-        raise ValueError("alert already decided")
 
-    alert.status = "approved" if decision == "approve" else "rejected"
-    alert.reason = reason
-    alert.assignee = analyst
-    alert.updated_at = utcnow()
+    status = "approved" if decision == "approve" else "rejected"
+    result = session.execute(
+        update(Alert)
+        .where(Alert.id == alert_id, Alert.status == "open")
+        .values(status=status, reason=reason, assignee=analyst, updated_at=utcnow())
+    )
+    if result.rowcount != 1:
+        raise ValueError("alert already decided")
 
     row = Decision(
         id=uuid4().hex,

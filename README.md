@@ -85,17 +85,18 @@ Trained on the committed synthetic dataset (`data/demo/transactions.csv`, 5,000 
 
 | Metric | Value |
 |---|---|
-| PR-AUC | **0.771** |
-| ROC-AUC | 0.893 |
-| Precision @ 1% FPR | 0.852 |
+| PR-AUC | **0.740** |
+| ROC-AUC | 0.877 |
+| Precision @ 1% FPR | 0.836 |
 | Recall @ 1% FPR | 0.719 |
-| Precision @ 100 | 0.49 |
+| Precision @ 100 | 0.48 |
 | Test prevalence | 0.064 |
 | Test rows / fraud rows | 1,000 / 64 |
+| Train / validation / test | 3,500 / 500 / 1,000 |
 | Run ID | `demo-001` |
-| Best iteration | 43 of 300 (early stopping) |
+| Best iteration | 17 of 300 (early stopping on validation) |
 
-Source of truth: `artifacts/demo/metrics.json` and `reports/metrics.json`. The model is trained on **synthetic data with injected fraud rings, entity evasion, shared-device false positives, and 1% label noise** — not on real transactions.
+Source of truth: `artifacts/demo/metrics.json` and `reports/metrics.json`. Early stopping uses a time-ordered validation slice carved out of the training window; the final 20% is untouched until metrics are computed. The model is trained on **synthetic data with injected fraud rings, entity evasion, shared-device false positives, and 1% label noise** — not on real transactions.
 
 ## Latency
 
@@ -103,7 +104,7 @@ Measured on the development machine (Windows 11, CPU-only, single Uvicorn worker
 
 | p50 | p95 | p99 | Mean | Sequential throughput |
 |---|---|---|---|---|
-| 18.8 ms | 23.2 ms | 40.8 ms | 19.5 ms | ~51 req/s |
+| 19.0 ms | 22.8 ms | 25.6 ms | 19.5 ms | ~51 req/s |
 
 This is a demo-scale number, not a capacity claim. It includes feature computation, model inference, SHAP, and the database write.
 
@@ -126,7 +127,7 @@ tests/          unit + integration (Kafka/Postgres opt-in)
 ## Tests
 
 ```bash
-python -m pytest -m "not integration" -q   # unit, ~40 tests
+python -m pytest -m "not integration" -q   # unit, 47 tests
 python -m pytest -m integration -q          # needs KAFKA_BOOTSTRAP
 cd dashboard && npm test && npm run build
 ```

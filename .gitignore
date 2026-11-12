@@ -6,7 +6,7 @@ __pycache__/
 .coverage
 htmlcov/
 .env
-data/dev.db
+data/*.db
 mlruns/
 .superpowers/
 node_modules/

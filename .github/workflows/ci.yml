@@ -57,7 +57,7 @@ jobs:
           exit 1
       - name: Integration tests
         env:
-          KAFKA_BOOTSTRAP: localhost:9092
+          KAFKA_BOOTSTRAP: localhost:9094
           DATABASE_URL: postgresql+psycopg://nexvia:nexvia@localhost:5432/nexvia
         run: |
           docker compose up -d postgres

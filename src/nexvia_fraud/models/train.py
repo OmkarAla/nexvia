@@ -22,6 +22,7 @@ from nexvia_fraud.config import Settings
 from nexvia_fraud.features.service import FeatureService
 
 TEST_FRACTION = 0.2
+VALIDATION_FRACTION = 0.1
 
 
 def _build_matrix(df: pd.DataFrame, service: FeatureService) -> np.ndarray:
@@ -54,6 +55,11 @@ def _precision_at_1pct_fpr(y_true: np.ndarray, scores: np.ndarray) -> tuple[floa
     )
 
 
+def _best_iteration(model) -> int:
+    value = getattr(model, "best_iteration", None)
+    return int(value) if value is not None else -1
+
+
 def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
     frame = df.copy()
     frame["event_time"] = pd.to_datetime(frame["event_time"], utc=True)
@@ -62,15 +68,20 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
     features = service.feature_names()
 
     split = frame["event_time"].quantile(1 - TEST_FRACTION)
-    train_mask = (frame["event_time"] < split).to_numpy()
-    test_mask = ~train_mask
-    if not train_mask.any() or not test_mask.any():
+    validation_split = frame["event_time"].quantile(1 - TEST_FRACTION - VALIDATION_FRACTION)
+    train_mask = (frame["event_time"] < validation_split).to_numpy()
+    validation_mask = (
+        (frame["event_time"] >= validation_split) & (frame["event_time"] < split)
+    ).to_numpy()
+    test_mask = (frame["event_time"] >= split).to_numpy()
+    if not train_mask.any() or not validation_mask.any() or not test_mask.any():
         raise ValueError("time split produced an empty side")
 
     X = _build_matrix(frame, service)
     y = frame["is_fraud"].to_numpy().astype(int)
 
     X_train, y_train = X[train_mask], y[train_mask]
+    X_validation, y_validation = X[validation_mask], y[validation_mask]
     X_test, y_test = X[test_mask], y[test_mask]
     positives = int(y_train.sum())
     negatives = int(len(y_train) - positives)
@@ -90,7 +101,12 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
         random_state=7,
         n_jobs=2,
     )
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+    model.fit(
+        X_train,
+        y_train,
+        eval_set=[(X_validation, y_validation)],
+        verbose=False,
+    )
 
     scores = model.predict_proba(X_test)[:, 1]
     pr_auc = float(average_precision_score(y_test, scores))
@@ -114,12 +130,16 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
         "recall_at_1pct_fpr": recall_1pct,
         "precision_at_100": precision_at_100,
         "n_train": int(train_mask.sum()),
+        "n_validation": int(validation_mask.sum()),
         "n_test": int(test_mask.sum()),
         "n_fraud_train": positives,
+        "n_fraud_validation": int(y_validation.sum()),
         "n_fraud_test": int(y_test.sum()),
+        "prevalence_validation": float(y_validation.mean()) if len(y_validation) else 0.0,
         "prevalence_test": float(y_test.mean()) if len(y_test) else 0.0,
-        "best_iteration": int(getattr(model, "best_iteration", -1) or -1),
-        "test_start": str(pd.Timestamp(split).isoformat()),
+        "best_iteration": _best_iteration(model),
+        "validation_start": str(frame.loc[validation_mask, "event_time"].min().isoformat()),
+        "test_start": str(frame.loc[test_mask, "event_time"].min().isoformat()),
         "feature_names": features,
     }
     for key, value in metrics.items():

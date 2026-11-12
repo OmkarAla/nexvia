@@ -23,3 +23,24 @@ def test_tamper_is_detected(session):
     session.commit()
 
     assert not verify_audit(session)
+
+
+def test_head_tracks_tail(session):
+    from nexvia_fraud.db.models import AuditHead
+
+    append_audit(session, {"action": "open", "id": 1})
+    last = append_audit(session, {"action": "close", "id": 1})
+    head = session.get(AuditHead, 1)
+    assert head is not None
+    assert head.hash == last.hash
+
+
+def test_truncation_is_detected(session):
+    append_audit(session, {"action": "open", "id": 1})
+    append_audit(session, {"action": "close", "id": 1})
+
+    row = session.query(AuditLog).order_by(AuditLog.id.desc()).first()
+    session.delete(row)
+    session.commit()
+
+    assert not verify_audit(session)

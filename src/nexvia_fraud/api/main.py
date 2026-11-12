@@ -33,13 +33,14 @@ from nexvia_fraud.db.repo import (
 from nexvia_fraud.features.service import FeatureService
 from nexvia_fraud.models.scorer import Scorer
 from nexvia_fraud.scoring import score_transaction
+from nexvia_fraud.timeutil import iso_utc
 
 
 def _transaction_payload(transaction: Transaction) -> dict:
     return {
         "transaction_id": transaction.id,
         "card_id": transaction.card_id,
-        "event_time": transaction.event_time.isoformat(),
+        "event_time": iso_utc(transaction.event_time),
         "amount": transaction.amount,
         "score": transaction.score,
         "mode": transaction.mode,

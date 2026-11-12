@@ -5,17 +5,19 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AwareDatetime, BaseModel, Field, field_serializer
+
+from nexvia_fraud.timeutil import iso_utc
 
 
 class ScoreRequest(BaseModel):
-    transaction_id: str
-    card_id: str
-    event_time: datetime
-    amount: float = Field(ge=0)
-    device_id: str = "unknown-device"
-    email_domain: str = "unknown.example"
-    addr_id: str = "unknown-addr"
+    transaction_id: str = Field(max_length=64)
+    card_id: str = Field(max_length=64)
+    event_time: AwareDatetime
+    amount: float = Field(ge=0, allow_inf_nan=False)
+    device_id: str = Field(default="unknown-device", max_length=128)
+    email_domain: str = Field(default="unknown.example", max_length=128)
+    addr_id: str = Field(default="unknown-addr", max_length=128)
 
 
 class FeatureContribution(BaseModel):
@@ -51,11 +53,15 @@ class AlertOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+    @field_serializer("created_at")
+    def _serialize_created_at(self, value: datetime) -> str:
+        return iso_utc(value)
+
 
 class DecisionRequest(BaseModel):
     decision: Literal["approve", "reject"]
-    reason: str
-    analyst: str
+    reason: str = Field(min_length=1, max_length=512)
+    analyst: str = Field(min_length=1, max_length=128)
 
 
 class AlertDetail(BaseModel):

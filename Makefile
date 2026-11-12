@@ -2,7 +2,6 @@
 
 setup:
 	python -m pip install -e ".[dev]"
-	python -m pre_commit install || true
 
 data:
 	python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv

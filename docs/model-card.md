@@ -19,7 +19,7 @@ Demonstration of a fraud-scoring pipeline on synthetic data. It exists to show f
 - Deliberate difficulty: 35% of ring transactions revert to the card's own entities (evasion), 6% of legitimate transactions use a shared device/domain, and 1% of labels are flipped.
 - No real customer data. No Kaggle data is redistributed.
 
-Split: time-ordered, last 20% is the test window (`test_start` in `artifacts/demo/metrics.json`).
+Split: time-ordered. The first 70% trains, the next 10% selects the early-stopping iteration, and the final 20% is the untouched test window (`validation_start` and `test_start` in `artifacts/demo/metrics.json`).
 
 ## Features
 
@@ -35,17 +35,34 @@ Split: time-ordered, last 20% is the test window (`test_start` in `artifacts/dem
 
 ## Metrics (run `demo-001`)
 
+Metrics are computed on the untouched final 20% window. Early stopping selected iteration 17 using a separate validation slice.
+
 | Metric | Value |
 |---|---|
-| PR-AUC (average precision) | 0.771 |
-| ROC-AUC | 0.893 |
-| Precision @ 1% FPR | 0.852 |
+| PR-AUC (average precision) | 0.740 |
+| ROC-AUC | 0.877 |
+| Precision @ 1% FPR | 0.836 |
 | Recall @ 1% FPR | 0.719 |
-| Precision @ 100 | 0.490 |
+| Precision @ 100 | 0.480 |
 | Test prevalence | 6.4% |
-| Test rows / fraud rows | 1,000 / 64 |
+| Train / validation / test rows | 3,500 / 500 / 1,000 |
+| Test fraud rows | 64 |
 
-Why PR-AUC: with a ~6% positive rate, ROC-AUC hides precision collapse. PR-AUC's baseline is the prevalence, so 0.771 is meaningfully above 0.064.
+Why PR-AUC: with a ~6% positive rate, ROC-AUC hides precision collapse. PR-AUC's baseline is the prevalence, so 0.740 is meaningfully above 0.064.
+
+## Unknown-card defaults
+
+When the card has no history:
+
+| Feature | Default |
+|---|---|
+| `velocity_1h`, `velocity_24h`, `unique_devices_24h` | 0 |
+| `amount_mean`, `amount_std`, `amount_zscore` | 0 |
+| `device_change`, `email_change`, `addr_change` | 0 |
+| `seconds_since_last_txn` | -1 |
+| `device_share_count`, `email_share_count`, `addr_share_count` | counts from other cards on the supplied entity (may be > 0) |
+
+The entity share counts are non-zero even for a new card, because the device/email/address may already be linked to other cards. That is intentional cold-start signal.
 
 ## Explanation
 

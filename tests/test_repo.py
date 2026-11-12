@@ -67,3 +67,10 @@ def test_list_alerts_filters(session, alert):
     assert len(list_alerts(session, "open", None, 50)) == 1
     assert len(list_alerts(session, "approved", None, 50)) == 0
     assert len(list_alerts(session, None, 0.95, 50)) == 0
+
+
+def test_event_time_is_normalized_to_utc(session):
+    transaction = upsert_transaction(
+        session, {**PAYLOAD, "transaction_id": "tz-1", "event_time": "2026-01-02T05:30:00+05:30"}
+    )
+    assert transaction.event_time.replace(tzinfo=None).isoformat() == "2026-01-02T00:00:00"

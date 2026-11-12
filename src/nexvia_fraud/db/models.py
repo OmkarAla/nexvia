@@ -61,7 +61,14 @@ class AuditLog(Base):
     __tablename__ = "audit_log"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    prev_hash: Mapped[str] = mapped_column(String(64))
+    prev_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     payload: Mapped[dict] = mapped_column(JSON)
     hash: Mapped[str] = mapped_column(String(64), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AuditHead(Base):
+    __tablename__ = "audit_head"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    hash: Mapped[str] = mapped_column(String(64))

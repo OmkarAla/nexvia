@@ -11,7 +11,7 @@ from nexvia_fraud.features.service import FeatureService
 from nexvia_fraud.models.scorer import Scorer
 from nexvia_fraud.models.train import train_model
 from nexvia_fraud.streaming.bus import InMemoryBus
-from nexvia_fraud.streaming.consumer import handle_message
+from nexvia_fraud.streaming.consumer import consume_one, handle_message
 from nexvia_fraud.streaming.producer import replay
 
 
@@ -95,3 +95,30 @@ def test_replay_publishes_bounded_stream(demo_df):
         keys.append(json.loads(value)["card_id"])
 
     assert keys == list(demo_df.head(3)["card_id"])
+
+
+class RecordingConsumer:
+    def __init__(self, messages):
+        self.messages = list(messages)
+        self.commits = 0
+
+    def poll(self, timeout):
+        return self.messages.pop(0) if self.messages else None
+
+    def commit(self):
+        self.commits += 1
+
+
+def test_malformed_message_is_committed_and_skipped(stream_env):
+    consumer = RecordingConsumer([("transactions.raw", b"not-json")])
+    env = stream_env
+    assert consume_one(consumer, env["features"], env["scorer"], env["factory"], env["settings"])
+    assert consumer.commits == 1
+
+
+def test_processing_failure_does_not_commit(stream_env):
+    consumer = RecordingConsumer([("transactions.raw", b'{"bad": 1}')])
+    env = stream_env
+    with pytest.raises(KeyError):
+        consume_one(consumer, env["features"], env["scorer"], env["factory"], env["settings"])
+    assert consumer.commits == 0

@@ -21,12 +21,18 @@ def test_training_writes_artifacts_and_metrics(tmp_path, demo_df):
 
 def test_split_is_temporal(tmp_path, demo_df):
     metrics = train_model(demo_df, str(tmp_path), run_id="t")
-    assert metrics["n_train"] + metrics["n_test"] == len(demo_df)
+    assert metrics["n_train"] + metrics["n_validation"] + metrics["n_test"] == len(demo_df)
 
-    split = pd.Timestamp(metrics["test_start"])
-    train_max = demo_df[demo_df.event_time < split].event_time.max()
-    test_min = demo_df[demo_df.event_time >= split].event_time.min()
-    assert train_max < test_min
+    validation_start = pd.Timestamp(metrics["validation_start"])
+    test_start = pd.Timestamp(metrics["test_start"])
+    assert demo_df[demo_df.event_time < validation_start].event_time.max() < validation_start
+    assert (
+        demo_df[
+            (demo_df.event_time >= validation_start) & (demo_df.event_time < test_start)
+        ].event_time.max()
+        < test_start
+    )
+    assert test_start <= demo_df.event_time.max()
 
 
 def test_training_accepts_csv_string_timestamps(tmp_path, demo_df):
