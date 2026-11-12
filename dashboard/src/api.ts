@@ -2,7 +2,9 @@ import type {
   Alert,
   AlertDetail,
   DecisionResult,
+  DriftReport,
   Health,
+  RetrainingRequest,
   Transaction,
 } from "./types";
 
@@ -38,6 +40,24 @@ export function getAlert(id: string): Promise<AlertDetail> {
 
 export function getTransactions(limit = 100): Promise<{ transactions: Transaction[] }> {
   return request<{ transactions: Transaction[] }>(`/transactions?limit=${limit}`);
+}
+
+export function getDriftLatest(): Promise<{ report: DriftReport | null }> {
+  return request<{ report: DriftReport | null }>("/drift/latest");
+}
+
+export function getRetrainingRequests(): Promise<{ requests: RetrainingRequest[] }> {
+  return request<{ requests: RetrainingRequest[] }>("/retraining-requests");
+}
+
+export function resolveRetrainingRequest(
+  id: string,
+  body: { status: "approved" | "rejected"; resolved_by: string },
+): Promise<{ request: RetrainingRequest }> {
+  return request<{ request: RetrainingRequest }>(`/retraining-requests/${id}/resolve`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function decide(

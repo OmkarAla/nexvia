@@ -44,3 +44,32 @@ export interface Health {
   status: string;
   model_version: string;
 }
+
+export interface DriftColumn {
+  column: string;
+  p_value: number;
+  drifted: boolean;
+}
+
+export interface DriftReport {
+  id: string;
+  created_at: string;
+  drift_share: number;
+  dataset_drift: boolean;
+  n_reference: number;
+  n_current: number;
+  method: string;
+  columns: DriftColumn[];
+}
+
+export type RetrainingStatus = "open" | "approved" | "rejected";
+
+export interface RetrainingRequest {
+  id: string;
+  drift_report_id: string;
+  reason: string;
+  status: RetrainingStatus;
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+}

@@ -22,3 +22,9 @@ export function scoreTone(score: number): "high" | "medium" | "low" {
   if (score >= 0.5) return "medium";
   return "low";
 }
+
+export function driftTone(share: number): "stable" | "watch" | "drifted" {
+  if (share < 0.1) return "stable";
+  if (share < 0.3) return "watch";
+  return "drifted";
+}

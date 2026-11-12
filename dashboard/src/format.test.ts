@@ -1,5 +1,5 @@
 import { buildAlertQuery } from "./api";
-import { formatMoney, formatScore, scoreTone } from "./format";
+import { driftTone, formatMoney, formatScore, scoreTone } from "./format";
 
 describe("formatScore", () => {
   it("renders one decimal percent", () => {
@@ -22,6 +22,14 @@ describe("scoreTone", () => {
     expect(scoreTone(0.9)).toBe("high");
     expect(scoreTone(0.6)).toBe("medium");
     expect(scoreTone(0.1)).toBe("low");
+  });
+});
+
+describe("driftTone", () => {
+  it("bands drift share", () => {
+    expect(driftTone(0.05)).toBe("stable");
+    expect(driftTone(0.2)).toBe("watch");
+    expect(driftTone(0.45)).toBe("drifted");
   });
 });
 
