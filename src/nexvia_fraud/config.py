@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     demo_data_path: str = "data/demo/transactions.csv"
     replay_rate: float = 2.0
     api_url: str = "http://localhost:8000"
-    drift_share_threshold: float = 0.3
+    drift_share_threshold: float = 0.5
     drift_min_rows: int = 50
     drift_interval_seconds: int = 60
     drift_reference_path: str = "artifacts/demo/reference_features.parquet"

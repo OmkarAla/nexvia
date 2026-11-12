@@ -14,9 +14,7 @@ from nexvia_fraud.features.service import FEATURE_NAMES
 @pytest.fixture
 def reference_path(tmp_path):
     rng = np.random.default_rng(3)
-    reference = pd.DataFrame(
-        {name: rng.normal(0, 1, 300) for name in FEATURE_NAMES}
-    )
+    reference = pd.DataFrame({name: rng.normal(0, 1, 300) for name in FEATURE_NAMES})
     path = tmp_path / "reference_features.parquet"
     reference.to_parquet(path, index=False)
     return str(path), reference

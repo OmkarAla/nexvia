@@ -4,7 +4,7 @@ Real-time transaction fraud scoring: a replayed Kafka stream, an XGBoost scorer 
 
 > **Education project.** Synthetic data only. Not a production fraud engine, and not a substitute for one.
 
-**Status:** vertical slice. Kafka → scorer → Postgres → dashboard works end to end. Feast, the GNN, drift monitoring, retraining, and Kubernetes are the next phase (see `docs/limitations.md`).
+**Status:** vertical slice + drift loop. Kafka → scorer → Postgres → dashboard works end to end, Evidently monitors feature drift, and a drift breach raises a retraining request for human review. Feast, the GNN, and Kubernetes are the next phase (see `docs/limitations.md`).
 
 ---
 
@@ -22,6 +22,8 @@ flowchart LR
     DB --> API[FastAPI]
     API --> UI[React dashboard]
     A --> DB
+    DB --> D[drift-monitor<br/>Evidently]
+    D --> DB
 ```
 
 The API and the Kafka consumer call the same `score_transaction()` function. There is one definition of scoring and one idempotency key (`transaction_id`).
@@ -34,6 +36,7 @@ The API and the Kafka consumer call the same `score_transaction()` function. The
 | Model | XGBoost (CPU), TreeSHAP contributions, early stopping on PR-AUC |
 | API | FastAPI + Uvicorn |
 | Storage | PostgreSQL 16 (SQLite for local tests) |
+| Drift | Evidently `DataDriftPreset` against a committed training reference |
 | Dashboard | React 18 + Vite + TypeScript (strict) |
 | Packaging | Docker Compose, GitHub Actions |
 
@@ -58,6 +61,7 @@ python -m pip install -e ".[dev]"
 python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv
 python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
 python scripts/seed.py --limit 600
+python scripts/drift_job.py --once
 uvicorn nexvia_fraud.api.app:app --port 8000
 ```
 
@@ -76,8 +80,9 @@ Kafka and the consumer require Docker Compose; the API, scorer, and dashboard do
 3. **Case queue** — filter by minimum score. Pick an alert with a high score.
 4. **Case detail** — amount, card, prior cases, and the SHAP bars showing which features pushed the score up or down.
 5. Enter a reason, click **Reject** (or Approve). The status changes and an audit hash is shown.
-6. `GET /audit` returns the hash-chained log with `valid: true`.
-7. `GET /metrics` shows request count and in-process p50/p95/p99.
+6. **Model health** — drift share, per-feature drift scores, and any retraining requests. Approve or reject a request; nothing retrains automatically.
+7. `GET /audit` returns the hash-chained log with `valid: true`.
+8. `GET /metrics` shows request count and in-process p50/p95/p99.
 
 ## Model and results
 
@@ -127,7 +132,7 @@ tests/          unit + integration (Kafka/Postgres opt-in)
 ## Tests
 
 ```bash
-python -m pytest -m "not integration" -q   # unit, 47 tests
+python -m pytest -m "not integration" -q   # unit, 62 tests
 python -m pytest -m integration -q          # needs KAFKA_BOOTSTRAP
 cd dashboard && npm test && npm run build
 ```
@@ -136,10 +141,18 @@ The integration test publishes a real message through Kafka, consumes it, scores
 
 ## Documentation
 
-- `docs/architecture.md` — components and request paths
+- `docs/architecture.md` — components, request paths, drift flow
 - `docs/api.md` — endpoints and payloads
 - `docs/model-card.md` — data, metrics, intended use
 - `docs/limitations.md` — bias, leakage risks, non-goals
+
+## Drift and retraining
+
+- The training run writes `artifacts/demo/reference_features.parquet` — the training distribution of all 13 features.
+- `drift-monitor` (a Compose service) reads the 500 most recent scored transactions, runs Evidently's `DataDriftPreset`, and stores a report in `drift_reports`.
+- When the drifted-column share crosses `DRIFT_SHARE_THRESHOLD` (default 0.5), exactly one **open** retraining request is created. Re-running the job does not spam requests.
+- A human approves or rejects the request in the Model health tab or via `POST /retraining-requests/{id}/resolve`. Nothing retrains or promotes automatically.
+- Fewer than `DRIFT_MIN_ROWS` (default 50) current rows produces `insufficient_data`, not a false alarm; a missing reference file produces `reference_missing`.
 
 ## Data and licensing
 

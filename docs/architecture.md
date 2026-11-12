@@ -91,7 +91,48 @@ erDiagram
         string reason
         string analyst
     }
+    DRIFT_REPORTS {
+        int seq PK
+        string id UK
+        float drift_share
+        bool dataset_drift
+        json summary
+    }
+    RETRAINING_REQUESTS {
+        int seq PK
+        string id UK
+        string drift_report_id FK
+        string status
+        string resolved_by
+    }
+    DRIFT_REPORTS ||--o{ RETRAINING_REQUESTS : "raises"
 ```
+
+## Drift flow
+
+```mermaid
+sequenceDiagram
+    participant T as Training
+    participant R as reference_features.parquet
+    participant J as drift-monitor
+    participant E as Evidently
+    participant D as Postgres
+    participant U as Dashboard
+
+    T->>R: write training distribution
+    J->>R: read reference
+    J->>D: read recent scored features
+    J->>E: DataDriftPreset(reference, current)
+    E-->>J: drift share + per-column distances
+    J->>D: insert drift_reports
+    alt share >= threshold
+        J->>D: create one open retraining_request
+    end
+    U->>D: GET /drift/latest, /retraining-requests
+    U->>D: resolve request (approved/rejected)
+```
+
+The job is deliberately conservative: insufficient current data returns `insufficient_data`, a missing reference returns `reference_missing`, and repeated runs during one episode do not create a second open request. A request is a prompt for a human, never an automatic retrain.
 
 ## Audit chain
 

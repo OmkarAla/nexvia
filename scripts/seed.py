@@ -30,7 +30,10 @@ def main() -> None:
 
     seeded = 0
     alerts = 0
-    for row in frame.sort_values("event_time").head(args.limit).itertuples(index=False):
+    ordered = frame.sort_values("event_time").reset_index(drop=True)
+    train_window = ordered.head(int(len(ordered) * 0.7))
+    sample = train_window.sample(n=min(args.limit, len(train_window)), random_state=7)
+    for row in sample.sort_values("event_time").itertuples(index=False):
         result = score_transaction(
             {
                 "transaction_id": row.transaction_id,

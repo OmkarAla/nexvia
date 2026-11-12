@@ -44,3 +44,4 @@ def test_shifted_column_is_detected(demo_df):
     assert result["method"] == "evidently:DataDriftPreset"
     assert result["n_reference"] == len(reference)
     assert result["n_current"] == len(current)
+    assert all("score" in column and "method" in column for column in result["columns"])

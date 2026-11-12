@@ -197,18 +197,14 @@ def create_app(
         with session_factory() as session:
             rows = list_retraining_requests(session)
             return {
-                "requests": [
-                    RetrainingRequestOut.model_validate(row).model_dump() for row in rows
-                ]
+                "requests": [RetrainingRequestOut.model_validate(row).model_dump() for row in rows]
             }
 
     @app.post("/retraining-requests/{request_id}/resolve")
     def resolve_request(request_id: str, body: ResolveRetrainingRequest) -> dict:
         try:
             with session_factory() as session:
-                row = resolve_retraining_request(
-                    session, request_id, body.status, body.resolved_by
-                )
+                row = resolve_retraining_request(session, request_id, body.status, body.resolved_by)
                 return {"request": RetrainingRequestOut.model_validate(row).model_dump()}
         except ValueError as exc:
             message = str(exc)

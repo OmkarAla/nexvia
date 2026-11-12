@@ -179,7 +179,14 @@ DRIFT_SUMMARY = {
     "dataset_drift": True,
     "n_reference": 3500,
     "n_current": 60,
-    "columns": [{"column": "amount_zscore", "p_value": 0.001, "drifted": True}],
+    "columns": [
+        {
+            "column": "amount_zscore",
+            "score": 0.42,
+            "method": "Wasserstein distance (normed)",
+            "drifted": True,
+        }
+    ],
     "method": "evidently:DataDriftPreset",
 }
 

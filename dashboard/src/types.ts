@@ -47,7 +47,8 @@ export interface Health {
 
 export interface DriftColumn {
   column: string;
-  p_value: number;
+  score: number;
+  method: string;
   drifted: boolean;
 }
 

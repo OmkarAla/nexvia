@@ -53,7 +53,7 @@ export function ModelHealth({ report, requests, onResolve }: Props) {
           <thead>
             <tr>
               <th>Feature</th>
-              <th className="right">p-value</th>
+              <th className="right">Drift score</th>
               <th className="right">Status</th>
             </tr>
           </thead>
@@ -61,7 +61,7 @@ export function ModelHealth({ report, requests, onResolve }: Props) {
             {report.columns.map((column) => (
               <tr key={column.column}>
                 <td>{column.column.replaceAll("_", " ")}</td>
-                <td className="right mono">{column.p_value.toExponential(2)}</td>
+                <td className="right mono">{column.score.toFixed(3)}</td>
                 <td className="right">
                   <span className={`pill ${column.drifted ? "pill-rejected" : "pill-approved"}`}>
                     {column.drifted ? "drifted" : "stable"}

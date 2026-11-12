@@ -130,3 +130,56 @@ fraud_score_latency_seconds{quantile="0.99"} 0.040771
 ```
 
 Latency is measured in-process over the last 2,000 requests, not a histogram.
+
+## GET /drift/latest
+
+`200` with `{"report": null}` before the first job run. Otherwise:
+
+```json
+{
+  "report": {
+    "id": "1f2c...",
+    "created_at": "2026-01-06T09:00:00Z",
+    "drift_share": 0.31,
+    "dataset_drift": true,
+    "n_reference": 3500,
+    "n_current": 120,
+    "method": "evidently:DataDriftPreset",
+    "columns": [
+      { "column": "amount_zscore", "score": 0.42, "method": "Wasserstein distance (normed)", "drifted": true }
+    ]
+  }
+}
+```
+
+## GET /retraining-requests
+
+```json
+{
+  "requests": [
+    {
+      "id": "q9...",
+      "drift_report_id": "1f2c...",
+      "reason": "drift share 0.60 >= 0.50",
+      "status": "open",
+      "created_at": "2026-01-06T09:00:01Z",
+      "resolved_at": null,
+      "resolved_by": null
+    }
+  ]
+}
+```
+
+At most one request is `open` at a time.
+
+## POST /retraining-requests/{id}/resolve
+
+```json
+{ "status": "approved", "resolved_by": "ana" }
+```
+
+- `200` — `{ "request": { ..., "status": "approved" } }`
+- `404` — request does not exist
+- `409` — request was already resolved
+
+Resolving a request does not retrain or promote anything; it records a human decision.

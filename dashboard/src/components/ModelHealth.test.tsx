@@ -12,8 +12,13 @@ const report: DriftReport = {
   n_current: 120,
   method: "evidently:DataDriftPreset",
   columns: [
-    { column: "amount_zscore", p_value: 0.001, drifted: true },
-    { column: "velocity_1h", p_value: 0.7, drifted: false },
+    {
+      column: "amount_zscore",
+      score: 0.42,
+      method: "Wasserstein distance (normed)",
+      drifted: true,
+    },
+    { column: "velocity_1h", score: 0.02, method: "Jensen-Shannon distance", drifted: false },
   ],
 };
 

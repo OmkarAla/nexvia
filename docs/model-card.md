@@ -76,6 +76,12 @@ TreeSHAP contributions are stored per transaction and shown in the case detail. 
 - No fairness analysis: device/email/address features can proxy for geography or income.
 - Precision @ 100 is modest (0.49), so the top of the queue still contains false positives.
 
+## Drift monitoring
+
+`artifacts/demo/reference_features.parquet` stores the training distribution of all 13 features (3,500 rows). The drift job compares it to the most recent 500 scored transactions using Evidently's `DataDriftPreset`. Evidently chooses the per-column test from the window size: p-value tests (K-S, chi-square, Z-test) for small windows, and distance metrics (Jensen-Shannon, normalised Wasserstein) for larger ones. Each method's own threshold decides whether a column drifted. A drifted-column share at or above `DRIFT_SHARE_THRESHOLD` (default 0.50) creates one open retraining request. Fewer than 50 current rows reports `insufficient_data`.
+
+Drift is covariate drift only. It does not observe concept drift (`P(y|x)` changing), and the synthetic labels have no delayed feedback, so a drift report is an early warning, not proof of performance loss.
+
 ## Ethical notice
 
 Fraud systems make consequential decisions about people. A real deployment needs human adjudication, appeal paths, fairness testing, and regulatory review. None of that is present here.

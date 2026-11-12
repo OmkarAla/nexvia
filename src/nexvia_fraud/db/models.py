@@ -77,7 +77,8 @@ class AuditHead(Base):
 class DriftReport(Base):
     __tablename__ = "drift_reports"
 
-    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     drift_share: Mapped[float] = mapped_column(Float)
     dataset_drift: Mapped[bool] = mapped_column(Boolean)
@@ -89,7 +90,8 @@ class DriftReport(Base):
 class RetrainingRequest(Base):
     __tablename__ = "retraining_requests"
 
-    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     drift_report_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("drift_reports.id"), index=True
     )

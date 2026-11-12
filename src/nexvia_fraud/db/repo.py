@@ -194,11 +194,7 @@ def save_drift_report(session: Session, summary: dict) -> DriftReport:
 
 
 def latest_drift_report(session: Session) -> DriftReport | None:
-    query = (
-        select(DriftReport)
-        .order_by(DriftReport.created_at.desc(), DriftReport.id.desc())
-        .limit(1)
-    )
+    query = select(DriftReport).order_by(DriftReport.seq.desc()).limit(1)
     return session.scalar(query)
 
 
@@ -224,11 +220,7 @@ def create_retraining_request_if_absent(
 
 
 def list_retraining_requests(session: Session, limit: int = 50) -> list[RetrainingRequest]:
-    query = (
-        select(RetrainingRequest)
-        .order_by(RetrainingRequest.created_at.desc())
-        .limit(limit)
-    )
+    query = select(RetrainingRequest).order_by(RetrainingRequest.seq.desc()).limit(limit)
     return list(session.scalars(query))
 
 
@@ -237,7 +229,7 @@ def resolve_retraining_request(
 ) -> RetrainingRequest:
     if status not in {"approved", "rejected"}:
         raise ValueError("status must be 'approved' or 'rejected'")
-    request = session.get(RetrainingRequest, request_id)
+    request = session.scalar(select(RetrainingRequest).where(RetrainingRequest.id == request_id))
     if request is None:
         raise ValueError("request not found")
     if request.status != "open":

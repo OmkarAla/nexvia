@@ -14,7 +14,7 @@ SUMMARY = {
     "dataset_drift": True,
     "n_reference": 100,
     "n_current": 60,
-    "columns": [{"column": "amount_zscore", "p_value": 0.001, "drifted": True}],
+    "columns": [{"column": "amount_zscore", "score": 0.42, "drifted": True}],
     "method": "evidently:DataDriftPreset",
 }
 

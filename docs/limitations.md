@@ -12,7 +12,7 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 
 - **XGBoost only.** The GNN (GraphSAGE on a heterogeneous card/device/email/address graph) and the logistic stacker are the next phase. `mode` is always `xgb_only`.
 - **Hand-built features.** Feast (offline Parquet, online Redis, point-in-time joins) is not wired yet. `FeatureService` preserves the interface but recomputes from the demo frame in memory.
-- **No drift monitoring.** Evidently, drift reports, and retraining requests are not implemented in this slice.
+- **Drift is covariate only.** Evidently compares feature distributions to the training reference. Concept drift (`P(y|x)` changing) and delayed-label performance are not observed. A drift breach raises a request; it is not proof of degradation.
 - **No calibration.** Scores are used as ranking and threshold inputs. A reliability diagram is not yet produced.
 
 ## Streaming
