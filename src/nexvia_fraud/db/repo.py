@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from nexvia_fraud.audit.chain import append_audit
@@ -34,6 +34,7 @@ def upsert_transaction(session: Session, payload: dict) -> Transaction:
             event_time=_as_datetime(payload["event_time"]),
             amount=float(payload["amount"]),
             features=payload.get("features") or {},
+            explanation=payload.get("top_features") or [],
             score=float(payload["score"]),
             mode=payload.get("mode", "xgb_only"),
             model_version=payload.get("model_version", "unknown"),
@@ -44,6 +45,7 @@ def upsert_transaction(session: Session, payload: dict) -> Transaction:
         transaction.mode = payload.get("mode", transaction.mode)
         transaction.model_version = payload.get("model_version", transaction.model_version)
         transaction.features = payload.get("features") or transaction.features
+        transaction.explanation = payload.get("top_features") or transaction.explanation
     session.commit()
     session.refresh(transaction)
     return transaction
@@ -83,6 +85,17 @@ def list_alerts(
 
 def get_alert(session: Session, alert_id: str) -> Alert | None:
     return session.get(Alert, alert_id)
+
+
+def count_prior_cases(session: Session, card_id: str, exclude_alert_id: str) -> int:
+    query = (
+        select(func.count())
+        .select_from(Alert)
+        .join(Transaction, Alert.transaction_id == Transaction.id)
+        .where(Transaction.card_id == card_id, Alert.id != exclude_alert_id)
+    )
+    return int(session.scalar(query) or 0)
+
 
 
 def decide(
