@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed
+  labels: {app: seed}
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels: {app: seed}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          command: ["sh", "-c", "until pg_isready -h postgres -U nexvia -d nexvia; do sleep 2; done"]
+      containers:
+        - name: seed
+          image: nexvia-fraud:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "scripts/seed.py", "--limit", "600"]
+          envFrom:
+            - configMapRef: {name: nexvia-config}
