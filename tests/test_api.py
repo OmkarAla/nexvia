@@ -20,7 +20,7 @@ def api_model(demo_df, tmp_path_factory):
 
 
 @pytest.fixture
-def client(api_model, demo_df):
+def api_env(api_model, demo_df):
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
@@ -35,7 +35,12 @@ def client(api_model, demo_df):
         factory,
     )
     with TestClient(app) as test_client:
-        yield test_client
+        yield {"client": test_client, "factory": factory}
+
+
+@pytest.fixture
+def client(api_env):
+    return api_env["client"]
 
 
 def _payload(row, transaction_id="api-txn-1"):
@@ -167,3 +172,60 @@ def test_timestamps_are_normalized_to_utc_z(client, demo_df):
     listing = client.get("/transactions").json()["transactions"]
     stored = next(item for item in listing if item["transaction_id"] == "tz-1")
     assert stored["event_time"] == "2026-01-02T00:00:00Z"
+
+
+DRIFT_SUMMARY = {
+    "drift_share": 0.4,
+    "dataset_drift": True,
+    "n_reference": 3500,
+    "n_current": 60,
+    "columns": [{"column": "amount_zscore", "p_value": 0.001, "drifted": True}],
+    "method": "evidently:DataDriftPreset",
+}
+
+
+def test_drift_endpoint_is_empty_before_first_run(client):
+    assert client.get("/drift/latest").json() == {"report": None}
+
+
+def test_drift_and_retraining_endpoints(api_env):
+    from nexvia_fraud.db.repo import (
+        create_retraining_request_if_absent,
+        save_drift_report,
+    )
+
+    client = api_env["client"]
+    with api_env["factory"]() as session:
+        report = save_drift_report(session, DRIFT_SUMMARY)
+        request = create_retraining_request_if_absent(session, report.id, "drift share 0.40")
+        request_id = request.id
+
+    latest = client.get("/drift/latest").json()["report"]
+    assert latest["id"] == report.id
+    assert latest["drift_share"] == 0.4
+    assert latest["columns"][0]["column"] == "amount_zscore"
+
+    requests = client.get("/retraining-requests").json()["requests"]
+    assert len(requests) == 1
+    assert requests[0]["status"] == "open"
+
+    resolved = client.post(
+        f"/retraining-requests/{request_id}/resolve",
+        json={"status": "approved", "resolved_by": "ana"},
+    )
+    assert resolved.status_code == 200
+    assert resolved.json()["request"]["status"] == "approved"
+
+    again = client.post(
+        f"/retraining-requests/{request_id}/resolve",
+        json={"status": "rejected", "resolved_by": "bob"},
+    )
+    assert again.status_code == 409
+
+
+def test_resolve_missing_request_is_404(client):
+    response = client.post(
+        "/retraining-requests/nope/resolve",
+        json={"status": "approved", "resolved_by": "ana"},
+    )
+    assert response.status_code == 404

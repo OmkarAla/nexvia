@@ -48,7 +48,7 @@ def test_insufficient_data_does_not_report(session, reference_path):
     path, reference = reference_path
     _seed(session, reference, rows=5)
 
-    result = run_drift_check(lambda: session, path, threshold=0.1, min_rows=50)
+    result = run_drift_check(session, path, threshold=0.1, min_rows=50)
 
     assert result["status"] == "insufficient_data"
     assert result["n_current"] == 5
@@ -59,7 +59,7 @@ def test_identical_distribution_creates_no_request(session, reference_path):
     path, reference = reference_path
     _seed(session, reference, rows=100)
 
-    result = run_drift_check(lambda: session, path, threshold=0.5, min_rows=50)
+    result = run_drift_check(session, path, threshold=0.5, min_rows=50)
 
     assert result["status"] == "ok"
     assert result["drift_share"] == 0.0
@@ -72,8 +72,8 @@ def test_shifted_distribution_creates_one_request(session, reference_path):
     path, reference = reference_path
     _seed(session, reference, rows=100, shift_columns=6)
 
-    first = run_drift_check(lambda: session, path, threshold=0.1, min_rows=50)
-    second = run_drift_check(lambda: session, path, threshold=0.1, min_rows=50)
+    first = run_drift_check(session, path, threshold=0.1, min_rows=50)
+    second = run_drift_check(session, path, threshold=0.1, min_rows=50)
 
     assert first["status"] == "ok"
     assert first["drift_share"] > 0.1
