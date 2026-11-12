@@ -37,4 +37,3 @@ def test_training_accepts_csv_string_timestamps(tmp_path, demo_df):
     metrics = train_model(frame, str(tmp_path / "artifacts"), run_id="csv-run")
 
     assert metrics["pr_auc"] > 0.5
-

@@ -88,7 +88,6 @@ class FeatureService:
             return 0.0
         return float(len(set(cards[:cutoff].tolist())))
 
-
     def feature_names(self) -> list[str]:
         return list(FEATURE_NAMES)
 

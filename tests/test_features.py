@@ -64,9 +64,7 @@ def test_feature_names_order():
 
 def test_counts_exclude_current_event():
     service = FeatureService.from_dataframe(_fixture())
-    f = service.get_features(
-        "c1", pd.Timestamp("2026-01-01T00:30:00Z"), 30.0, "d2", "a.com", "x"
-    )
+    f = service.get_features("c1", pd.Timestamp("2026-01-01T00:30:00Z"), 30.0, "d2", "a.com", "x")
     assert f["velocity_1h"] == 1.0
     assert f["velocity_24h"] == 1.0
     assert f["unique_devices_24h"] == 1.0
@@ -85,9 +83,7 @@ def test_counts_exclude_current_event():
 
 def test_share_counts_capture_rings():
     service = FeatureService.from_dataframe(_fixture())
-    f = service.get_features(
-        "c2", pd.Timestamp("2026-01-01T00:40:00Z"), 12.0, "d2", "a.com", "y"
-    )
+    f = service.get_features("c2", pd.Timestamp("2026-01-01T00:40:00Z"), 12.0, "d2", "a.com", "y")
     assert f["device_share_count"] == 1.0  # c1 used d2
     assert f["email_share_count"] == 1.0
     assert f["addr_share_count"] == 0.0
@@ -95,9 +91,7 @@ def test_share_counts_capture_rings():
 
 def test_unknown_card_defaults():
     service = FeatureService.from_dataframe(_fixture())
-    f = service.get_features(
-        "nope", pd.Timestamp("2026-01-01T00:30:00Z"), 5.0, "d9", "b.com", "y"
-    )
+    f = service.get_features("nope", pd.Timestamp("2026-01-01T00:30:00Z"), 5.0, "d9", "b.com", "y")
     assert f["velocity_1h"] == 0.0
     assert f["amount_zscore"] == 0.0
     assert f["seconds_since_last_txn"] == -1.0

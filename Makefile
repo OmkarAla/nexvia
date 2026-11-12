@@ -23,6 +23,9 @@ demo:
 test:
 	python -m pytest -q
 
+test-integration:
+	python -m pytest -m integration -q
+
 lint:
 	ruff check .
 	ruff format --check .

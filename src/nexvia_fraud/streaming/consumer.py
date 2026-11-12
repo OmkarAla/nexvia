@@ -7,7 +7,7 @@ import logging
 
 from nexvia_fraud.config import Settings
 from nexvia_fraud.features.service import FeatureService
-from nexvia_fraud.models.scorer import ScoreResult, Scorer
+from nexvia_fraud.models.scorer import Scorer, ScoreResult
 from nexvia_fraud.scoring import score_transaction
 from nexvia_fraud.streaming.bus import Consumer
 
@@ -21,9 +21,7 @@ def handle_message(
     session_factory,
     settings: Settings,
 ) -> ScoreResult:
-    return score_transaction(
-        raw, features, scorer, session_factory, settings.alert_threshold
-    )
+    return score_transaction(raw, features, scorer, session_factory, settings.alert_threshold)
 
 
 def run(

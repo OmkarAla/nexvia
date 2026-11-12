@@ -20,9 +20,7 @@ class ScoreResult:
 
 
 class Scorer:
-    def __init__(
-        self, booster: xgb.Booster, feature_names: list[str], model_version: str
-    ) -> None:
+    def __init__(self, booster: xgb.Booster, feature_names: list[str], model_version: str) -> None:
         self._booster = booster
         self.feature_names = feature_names
         self.model_version = model_version
@@ -58,7 +56,7 @@ class Scorer:
                 "contribution": float(contribution),
             }
             for name, value, contribution in zip(
-                self.feature_names, values[0], contributions[:-1]
+                self.feature_names, values[0], contributions[:-1], strict=False
             )
         ]
         items.sort(key=lambda item: abs(item["contribution"]), reverse=True)

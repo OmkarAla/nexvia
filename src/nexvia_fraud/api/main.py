@@ -75,7 +75,6 @@ def create_app(
             rows = list_transactions(session, limit)
             return {"transactions": [_transaction_payload(row) for row in rows]}
 
-
     @app.post("/score", response_model=ScoreResponse)
     def score(request: ScoreRequest) -> ScoreResponse:
         start = time.perf_counter()
@@ -97,9 +96,7 @@ def create_app(
 
     @app.post("/score/batch", response_model=BatchResponse)
     def score_batch(request: BatchRequest) -> BatchResponse:
-        scores = [
-            score(transaction) for transaction in request.transactions
-        ]
+        scores = [score(transaction) for transaction in request.transactions]
         return BatchResponse(scores=scores)
 
     @app.get("/alerts")

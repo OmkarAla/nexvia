@@ -30,7 +30,9 @@ class Metrics:
             "# TYPE fraud_score_latency_seconds gauge",
         ]
         for quantile in (0.5, 0.95, 0.99):
-            lines.append(
-                f'fraud_score_latency_seconds{{quantile="{quantile}"}} {self._quantile(quantile):.6f}'
+            line = (
+                f'fraud_score_latency_seconds{{quantile="{quantile}"}} '
+                f"{self._quantile(quantile):.6f}"
             )
+            lines.append(line)
         return "\n".join(lines) + "\n"

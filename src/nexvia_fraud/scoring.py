@@ -6,7 +6,7 @@ import pandas as pd
 
 from nexvia_fraud.db.repo import create_alert_if_absent, upsert_transaction
 from nexvia_fraud.features.service import FeatureService
-from nexvia_fraud.models.scorer import ScoreResult, Scorer
+from nexvia_fraud.models.scorer import Scorer, ScoreResult
 
 
 def score_transaction(

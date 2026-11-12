@@ -97,10 +97,7 @@ def count_prior_cases(session: Session, card_id: str, exclude_alert_id: str) -> 
     return int(session.scalar(query) or 0)
 
 
-
-def decide(
-    session: Session, alert_id: str, decision: str, reason: str, analyst: str
-) -> Decision:
+def decide(session: Session, alert_id: str, decision: str, reason: str, analyst: str) -> Decision:
     if decision not in {"approve", "reject"}:
         raise ValueError("decision must be 'approve' or 'reject'")
     if not reason.strip():

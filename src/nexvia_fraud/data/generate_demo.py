@@ -95,8 +95,6 @@ def _assign_rings(
     return df
 
 
-
-
 def generate_demo_transactions(n: int = 5000, seed: int = 7) -> pd.DataFrame:
     """Return ``n`` synthetic transactions with a fraud-ring structure."""
     rng = np.random.default_rng(seed)
@@ -125,7 +123,6 @@ def generate_demo_transactions(n: int = 5000, seed: int = 7) -> pd.DataFrame:
     }
     email_domain = np.array([card_domain[i] for i in card_index])
     addr_id = np.array([f"addr-{i % 200:03d}" for i in card_index])
-
 
     df = pd.DataFrame(
         {
