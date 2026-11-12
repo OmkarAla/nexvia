@@ -24,12 +24,19 @@ COLUMNS = [
 ]
 
 _SPAN = pd.Timedelta(days=30)
+_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "outlook.com", "proton.me"]
 
 
 def _assign_rings(
     df: pd.DataFrame, rng: np.random.Generator, target_fraud_rate: float
 ) -> pd.DataFrame:
-    """Overwrite shared entities for a subset of cards and mark them fraud."""
+    """Overwrite shared entities for a subset of cards and mark them fraud.
+
+    Fraud rings are deliberately not perfectly separable: members sometimes
+    fall back to their own devices (evasion), legitimate transactions share
+    the same public devices and email domains, and a small amount of label
+    noise is injected.
+    """
     counts = df.groupby("card_id").size().sort_values(ascending=False)
     target_rows = max(2, int(len(df) * target_fraud_rate))
 
@@ -44,20 +51,50 @@ def _assign_rings(
     df = df.copy()
     df["is_fraud"] = 0
 
-    # Rings of 2-5 cards share a device, email domain and address.
+    normal_device = df.groupby("card_id")["device_id"].agg(lambda s: s.mode().iloc[0])
+    normal_email = df.groupby("card_id")["email_domain"].agg(lambda s: s.mode().iloc[0])
+    normal_addr = df.groupby("card_id")["addr_id"].agg(lambda s: s.mode().iloc[0])
+
+    # Rings of 2-5 cards share a device, email domain and address. The device
+    # and address pools overlap with legitimate shared usage on purpose.
     ring_size = int(rng.integers(2, 6))
+    ring_ids: list[int] = []
     for index in range(0, len(selected), ring_size):
         ring_id = index // ring_size
         members = selected[index : index + ring_size]
         if not members:
             continue
+        ring_ids.append(ring_id)
         mask = df["card_id"].isin(members)
-        df.loc[mask, "device_id"] = f"ring-device-{ring_id:02d}"
-        df.loc[mask, "email_domain"] = f"ring{ring_id:02d}.example"
-        df.loc[mask, "addr_id"] = f"ring-addr-{ring_id:02d}"
+        df.loc[mask, "device_id"] = f"shared-device-{ring_id % 50:02d}"
+        df.loc[mask, "email_domain"] = _EMAIL_DOMAINS[ring_id % len(_EMAIL_DOMAINS)]
+        df.loc[mask, "addr_id"] = f"addr-{ring_id % 200:03d}"
         df.loc[mask, "is_fraud"] = 1
 
+    if not ring_ids:
+        return df
+
+    # Evasion: a third of ring transactions use the card's own entities again.
+    fraud_mask = df["is_fraud"] == 1
+    revert = fraud_mask & (rng.random(len(df)) < 0.35)
+    df.loc[revert, "device_id"] = df.loc[revert, "card_id"].map(normal_device)
+    df.loc[revert, "email_domain"] = df.loc[revert, "card_id"].map(normal_email)
+    df.loc[revert, "addr_id"] = df.loc[revert, "card_id"].map(normal_addr)
+
+    # False positives: 6% of legitimate transactions land on a shared entity.
+    legit = ~df["is_fraud"].astype(bool).to_numpy()
+    shared = legit & (rng.random(len(df)) < 0.06)
+    chosen = rng.choice(np.asarray(ring_ids), size=int(shared.sum()))
+    df.loc[shared, "device_id"] = [f"shared-device-{r % 50:02d}" for r in chosen]
+    df.loc[shared, "email_domain"] = [_EMAIL_DOMAINS[r % len(_EMAIL_DOMAINS)] for r in chosen]
+
+    # Label noise: 1% of all rows are mislabeled.
+    flip = rng.random(len(df)) < 0.01
+    df.loc[flip, "is_fraud"] = 1 - df.loc[flip, "is_fraud"]
+
     return df
+
+
 
 
 def generate_demo_transactions(n: int = 5000, seed: int = 7) -> pd.DataFrame:
@@ -73,13 +110,22 @@ def generate_demo_transactions(n: int = 5000, seed: int = 7) -> pd.DataFrame:
     amount = np.round(rng.lognormal(mean=3.4, sigma=0.9, size=n), 2)
     card_id = np.array([f"card-{i:04d}" for i in card_index])
 
+    shared_rows = rng.random(n) < 0.25
     device = np.where(
-        rng.random(n) < 0.2,
-        np.char.add(np.char.add(card_id, "-secondary"), ""),
-        np.char.add(card_id, "-primary"),
+        shared_rows,
+        [f"shared-device-{i % 50:02d}" for i in card_index],
+        np.where(
+            rng.random(n) < 0.2,
+            np.array([f"{c}-secondary" for c in card_id]),
+            np.array([f"{c}-primary" for c in card_id]),
+        ),
     )
-    email_domain = np.array([f"{c.replace('card-', 'user')}.example" for c in card_id])
+    card_domain = {
+        i: _EMAIL_DOMAINS[int(rng.integers(0, len(_EMAIL_DOMAINS)))] for i in range(n_cards)
+    }
+    email_domain = np.array([card_domain[i] for i in card_index])
     addr_id = np.array([f"addr-{i % 200:03d}" for i in card_index])
+
 
     df = pd.DataFrame(
         {
