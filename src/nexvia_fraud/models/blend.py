@@ -13,9 +13,7 @@ def _logit(probability: float) -> float:
     return float(np.log(probability / (1.0 - probability)))
 
 
-def fit_blender(
-    xgb_prob: np.ndarray, gnn_prob: np.ndarray, y: np.ndarray
-) -> dict:
+def fit_blender(xgb_prob: np.ndarray, gnn_prob: np.ndarray, y: np.ndarray) -> dict:
     xgb_prob = np.asarray(xgb_prob, dtype=float)
     gnn_prob = np.asarray(gnn_prob, dtype=float)
     y = np.asarray(y, dtype=int)

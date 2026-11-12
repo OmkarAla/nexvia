@@ -499,6 +499,18 @@ h3 {
   text-align: right;
 }
 
+.blend-marker {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(94, 234, 212, 0.15);
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
 footer {
   margin-top: 26px;
   padding-top: 14px;

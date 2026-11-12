@@ -31,6 +31,11 @@ export function LiveFeed({ transactions }: { transactions: Transaction[] }) {
               <td className="right">{formatMoney(transaction.amount)}</td>
               <td className={`right score-${scoreTone(transaction.score)}`}>
                 {formatScore(transaction.score)}
+                {transaction.mode === "blended" && (
+                  <span className="blend-marker" title="blended with the GNN">
+                    B
+                  </span>
+                )}
               </td>
             </tr>
           ))}

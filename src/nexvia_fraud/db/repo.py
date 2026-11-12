@@ -27,6 +27,7 @@ _UPSERT_COLUMNS = (
     "features",
     "explanation",
     "score",
+    "gnn_score",
     "mode",
     "model_version",
 )
@@ -64,6 +65,7 @@ def upsert_transaction(session: Session, payload: dict) -> Transaction:
         "features": payload.get("features") or {},
         "explanation": payload.get("top_features") or [],
         "score": float(payload["score"]),
+        "gnn_score": payload.get("gnn_score"),
         "mode": payload.get("mode", "xgb_only"),
         "model_version": payload.get("model_version", "unknown"),
     }

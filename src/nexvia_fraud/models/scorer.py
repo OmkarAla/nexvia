@@ -1,4 +1,4 @@
-"""Load a trained booster and score transactions with TreeSHAP contributions."""
+"""Load a trained booster and score transactions with optional GNN blending."""
 
 from __future__ import annotations
 
@@ -8,7 +8,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import xgboost as xgb
+
+from nexvia_fraud.models.blend import apply_blender
 
 
 @dataclass
@@ -17,6 +20,7 @@ class ScoreResult:
     top_features: list[dict] = field(default_factory=list)
     mode: str = "xgb_only"
     model_version: str = ""
+    gnn_score: float | None = None
 
 
 class Scorer:
@@ -26,11 +30,15 @@ class Scorer:
         feature_names: list[str],
         model_version: str,
         best_iteration: int = -1,
+        gnn_scores: dict[str, float] | None = None,
+        blend: dict | None = None,
     ) -> None:
         self._booster = booster
         self.feature_names = feature_names
         self.model_version = model_version
         self.best_iteration = best_iteration
+        self.gnn_scores = gnn_scores or {}
+        self.blend = blend
 
     @classmethod
     def load(cls, model_dir: str | Path) -> Scorer:
@@ -48,14 +56,28 @@ class Scorer:
             best = metrics.get("best_iteration")
             best_iteration = int(best) if best is not None else -1
 
-        return cls(booster, feature_names, version, best_iteration)
+        gnn_scores: dict[str, float] = {}
+        gnn_path = model_dir / "gnn_card_scores.parquet"
+        if gnn_path.exists():
+            frame = pd.read_parquet(gnn_path)
+            gnn_scores = {
+                str(card_id): float(score)
+                for card_id, score in zip(frame["card_id"], frame["gnn_score"], strict=False)
+            }
+
+        blend = None
+        blend_path = model_dir / "blend.json"
+        if blend_path.exists():
+            blend = json.loads(blend_path.read_text())
+
+        return cls(booster, feature_names, version, best_iteration, gnn_scores, blend)
 
     def _iteration_range(self) -> tuple[int, int] | None:
         if self.best_iteration >= 0:
             return (0, self.best_iteration + 1)
         return None
 
-    def score(self, features: dict[str, float]) -> ScoreResult:
+    def score(self, features: dict[str, float], card_id: str | None = None) -> ScoreResult:
         values = np.asarray(
             [[self._sanitize(features.get(name, 0.0)) for name in self.feature_names]],
             dtype=np.float32,
@@ -79,11 +101,21 @@ class Scorer:
         ]
         items.sort(key=lambda item: abs(item["contribution"]), reverse=True)
 
+        gnn_score: float | None = None
+        mode = "xgb_only"
+        if card_id is not None and self.blend is not None:
+            card_score = self.gnn_scores.get(card_id)
+            if card_score is not None:
+                gnn_score = card_score
+                probability = apply_blender(self.blend, probability, card_score)
+                mode = "blended"
+
         return ScoreResult(
             score=probability,
             top_features=items[:10],
-            mode="xgb_only",
+            mode=mode,
             model_version=self.model_version,
+            gnn_score=gnn_score,
         )
 
     @staticmethod

@@ -161,9 +161,7 @@ def train_gnn(
     y_test = test_labels.reindex(test_cards["card_id"]).to_numpy()
     pr_auc = _safe_auc(y_test, test_cards["gnn_score"].to_numpy())
     roc_auc = (
-        float(roc_auc_score(y_test, test_cards["gnn_score"]))
-        if len(np.unique(y_test)) > 1
-        else 0.0
+        float(roc_auc_score(y_test, test_cards["gnn_score"])) if len(np.unique(y_test)) > 1 else 0.0
     )
 
     out = Path(out_dir)

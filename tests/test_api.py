@@ -69,6 +69,7 @@ def test_score_returns_contract(client, demo_df):
     assert 0.0 <= body["score"] <= 1.0
     assert body["mode"] == "xgb_only"
     assert body["model_version"] == "api-test"
+    assert body["gnn_score"] is None
     assert len(body["top_features"]) > 0
     assert set(body["top_features"][0]) == {"feature", "value", "contribution"}
 

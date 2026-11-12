@@ -31,6 +31,7 @@ class ScoreResponse(BaseModel):
     score: float
     mode: str
     model_version: str
+    gnn_score: float | None = None
     top_features: list[FeatureContribution]
 
 

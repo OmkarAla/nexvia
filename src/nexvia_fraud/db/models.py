@@ -26,6 +26,7 @@ class Transaction(Base):
     features: Mapped[dict] = mapped_column(JSON, default=dict)
     explanation: Mapped[list] = mapped_column(JSON, default=list)
     score: Mapped[float] = mapped_column(Float)
+    gnn_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     mode: Mapped[str] = mapped_column(String(32), default="xgb_only")
     model_version: Mapped[str] = mapped_column(String(64), default="unknown")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

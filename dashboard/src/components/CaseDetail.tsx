@@ -67,6 +67,20 @@ export function CaseDetail({ detail, auditHash, onDecide }: Props) {
           <dd className="mono">{transaction.model_version}</dd>
         </div>
         <div>
+          <dt>Mode</dt>
+          <dd>
+            <span className={`pill ${transaction.mode === "blended" ? "pill-approved" : ""}`}>
+              {transaction.mode === "blended" ? "blended" : "xgb only"}
+            </span>
+          </dd>
+        </div>
+        {transaction.gnn_score !== null && (
+          <div>
+            <dt>GNN score</dt>
+            <dd>{formatScore(transaction.gnn_score)}</dd>
+          </div>
+        )}
+        <div>
           <dt>Prior cases</dt>
           <dd>{prior_cases}</dd>
         </div>

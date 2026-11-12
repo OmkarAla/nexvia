@@ -24,7 +24,7 @@ def score_transaction(
         payload.get("email_domain", "unknown.example"),
         payload.get("addr_id", "unknown-addr"),
     )
-    result = scorer.score(feature_values)
+    result = scorer.score(feature_values, card_id=payload["card_id"])
 
     record = {
         **payload,
@@ -32,6 +32,7 @@ def score_transaction(
         "score": result.score,
         "mode": result.mode,
         "model_version": result.model_version,
+        "gnn_score": result.gnn_score,
         "top_features": result.top_features,
     }
 

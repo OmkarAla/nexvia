@@ -68,9 +68,9 @@ def test_scorer_blends_known_card(tmp_path, demo_df):
     import pandas as pd
 
     train_model(demo_df, str(tmp_path), run_id="blend-test")
-    pd.DataFrame(
-        [{"card_id": "card-known", "gnn_score": 0.9, "split": "train"}]
-    ).to_parquet(tmp_path / "gnn_card_scores.parquet", index=False)
+    pd.DataFrame([{"card_id": "card-known", "gnn_score": 0.9, "split": "train"}]).to_parquet(
+        tmp_path / "gnn_card_scores.parquet", index=False
+    )
     (tmp_path / "blend.json").write_text(
         json.dumps({"coef": [0.7, 0.3], "intercept": 0.1, "n": 100})
     )

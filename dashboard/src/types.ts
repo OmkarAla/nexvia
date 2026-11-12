@@ -18,6 +18,7 @@ export interface Transaction {
   score: number;
   mode: string;
   model_version: string;
+  gnn_score: number | null;
   features: Record<string, number>;
 }
 

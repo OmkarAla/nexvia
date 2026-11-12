@@ -50,6 +50,7 @@ def _transaction_payload(transaction: Transaction) -> dict:
         "score": transaction.score,
         "mode": transaction.mode,
         "model_version": transaction.model_version,
+        "gnn_score": transaction.gnn_score,
         "features": transaction.features,
     }
 
@@ -111,6 +112,7 @@ def create_app(
             score=result.score,
             mode=result.mode,
             model_version=result.model_version,
+            gnn_score=result.gnn_score,
             top_features=result.top_features,
         )
 

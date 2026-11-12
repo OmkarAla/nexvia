@@ -6,14 +6,46 @@ from nexvia_fraud.models.graph import build_graph
 def _frame() -> pd.DataFrame:
     return pd.DataFrame(
         [
-            dict(transaction_id="t1", card_id="c1", event_time="2026-01-01T00:00:00Z",
-                 amount=10.0, device_id="d1", email_domain="e1.com", addr_id="a1", is_fraud=1),
-            dict(transaction_id="t2", card_id="c1", event_time="2026-01-01T00:10:00Z",
-                 amount=20.0, device_id="d2", email_domain="e1.com", addr_id="a1", is_fraud=1),
-            dict(transaction_id="t3", card_id="c2", event_time="2026-01-01T00:20:00Z",
-                 amount=30.0, device_id="d1", email_domain="e2.com", addr_id="a1", is_fraud=0),
-            dict(transaction_id="t4", card_id="c3", event_time="2026-01-01T00:30:00Z",
-                 amount=40.0, device_id="d3", email_domain="e3.com", addr_id="a2", is_fraud=0),
+            dict(
+                transaction_id="t1",
+                card_id="c1",
+                event_time="2026-01-01T00:00:00Z",
+                amount=10.0,
+                device_id="d1",
+                email_domain="e1.com",
+                addr_id="a1",
+                is_fraud=1,
+            ),
+            dict(
+                transaction_id="t2",
+                card_id="c1",
+                event_time="2026-01-01T00:10:00Z",
+                amount=20.0,
+                device_id="d2",
+                email_domain="e1.com",
+                addr_id="a1",
+                is_fraud=1,
+            ),
+            dict(
+                transaction_id="t3",
+                card_id="c2",
+                event_time="2026-01-01T00:20:00Z",
+                amount=30.0,
+                device_id="d1",
+                email_domain="e2.com",
+                addr_id="a1",
+                is_fraud=0,
+            ),
+            dict(
+                transaction_id="t4",
+                card_id="c3",
+                event_time="2026-01-01T00:30:00Z",
+                amount=40.0,
+                device_id="d3",
+                email_domain="e3.com",
+                addr_id="a2",
+                is_fraud=0,
+            ),
         ]
     )
 
