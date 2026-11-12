@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nexvia
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - postgres.yaml
+  - kafka.yaml
+  - redis.yaml
+  - api.yaml
+  - consumer.yaml
+  - producer.yaml
+  - drift-monitor.yaml
+  - dashboard.yaml
+  - seed-job.yaml

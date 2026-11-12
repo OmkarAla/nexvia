@@ -165,6 +165,7 @@ The integration test publishes a real message through Kafka, consumes it, scores
 - `docs/api.md` — endpoints and payloads
 - `docs/model-card.md` — data, metrics, intended use
 - `docs/limitations.md` — bias, leakage risks, non-goals
+- `docs/kubernetes.md` — kind manifests, apply order, port-forwards
 
 ## Drift and retraining
 

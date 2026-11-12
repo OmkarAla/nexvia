@@ -155,6 +155,10 @@ The job is deliberately conservative: insufficient current data returns `insuffi
 
 Each row hashes `prev_hash || canonical_json(payload)`, and a singleton head row stores the latest hash under a row lock. Verification walks the chain from the genesis value and then compares the final link to the head. Mutation of a payload, or deletion of the tail, breaks verification. An attacker who can write both `audit_log` and `audit_head` can still rewrite history — external anchoring is not implemented (see `docs/limitations.md`).
 
+## Kubernetes
+
+Kustomize manifests in `k8s/` run the same services in a single-node cluster (kind or Docker Desktop). Postgres, Kafka, and Redis are in-cluster; the API and dashboard are ClusterIP services reached by port-forward. The seed step is a Job. See `docs/kubernetes.md`.
+
 ## Deployment topology (hosted, later phase)
 
 ```mermaid

@@ -1,4 +1,4 @@
-.PHONY: setup data train gnn up down demo test lint
+.PHONY: setup data train gnn up down demo test lint k8s
 
 setup:
 	python -m pip install -e ".[dev]"
@@ -27,6 +27,10 @@ test:
 
 test-integration:
 	python -m pytest -m integration -q
+
+k8s:
+	kubectl kustomize k8s/overlays/kind > /dev/null
+	echo "kustomize build OK"
 
 lint:
 	ruff check .

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexvia-config
+data:
+  DATABASE_URL: postgresql+psycopg://nexvia:nexvia@postgres:5432/nexvia
+  KAFKA_BOOTSTRAP: kafka:9092
+  RAW_TOPIC: transactions.raw
+  SCORED_TOPIC: transactions.scored
+  ALERTS_TOPIC: alerts
+  ALERT_THRESHOLD: "0.5"
+  MODEL_DIR: artifacts/demo
+  DEMO_DATA_PATH: data/demo/transactions.csv
+  REPLAY_RATE: "2"
+  DRIFT_SHARE_THRESHOLD: "0.5"
+  DRIFT_MIN_ROWS: "50"
+  DRIFT_INTERVAL_SECONDS: "60"
+  DRIFT_REFERENCE_PATH: artifacts/demo/reference_features.parquet

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drift-monitor
+  labels: {app: drift-monitor}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: drift-monitor}
+  template:
+    metadata:
+      labels: {app: drift-monitor}
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          command: ["sh", "-c", "until pg_isready -h postgres -U nexvia -d nexvia; do sleep 2; done"]
+      containers:
+        - name: drift-monitor
+          image: nexvia-fraud:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "scripts/drift_job.py", "--loop", "--interval", "60"]
+          envFrom:
+            - configMapRef: {name: nexvia-config}
+          resources:
+            requests: {cpu: "100m", memory: "256Mi"}
+            limits: {cpu: "500m", memory: "512Mi"}
