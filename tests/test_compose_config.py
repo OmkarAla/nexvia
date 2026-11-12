@@ -29,5 +29,6 @@ def test_compose_defines_the_full_stack():
         "api",
         "consumer",
         "producer",
+        "drift-monitor",
         "dashboard",
     } <= services

@@ -98,6 +98,17 @@ services:
       consumer:
         condition: service_started
 
+  drift-monitor:
+    build: .
+    command: python scripts/drift_job.py --loop --interval 60
+    restart: on-failure
+    environment: *app_env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+
   dashboard:
     build:
       context: ./dashboard

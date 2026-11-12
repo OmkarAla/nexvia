@@ -64,6 +64,31 @@ class DecisionRequest(BaseModel):
     analyst: str = Field(min_length=1, max_length=128)
 
 
+class RetrainingRequestOut(BaseModel):
+    id: str
+    drift_report_id: str
+    reason: str
+    status: str
+    created_at: datetime
+    resolved_at: datetime | None = None
+    resolved_by: str | None = None
+
+    model_config = {"from_attributes": True}
+
+    @field_serializer("created_at")
+    def _serialize_created_at(self, value: datetime) -> str:
+        return iso_utc(value)
+
+    @field_serializer("resolved_at")
+    def _serialize_resolved_at(self, value: datetime | None) -> str | None:
+        return iso_utc(value) if value is not None else None
+
+
+class ResolveRetrainingRequest(BaseModel):
+    status: Literal["approved", "rejected"]
+    resolved_by: str = Field(min_length=1, max_length=128)
+
+
 class AlertDetail(BaseModel):
     alert: AlertOut
     transaction: dict

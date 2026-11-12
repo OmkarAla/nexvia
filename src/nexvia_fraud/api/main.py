@@ -16,19 +16,24 @@ from nexvia_fraud.api.schemas import (
     BatchRequest,
     BatchResponse,
     DecisionRequest,
+    ResolveRetrainingRequest,
+    RetrainingRequestOut,
     ScoreRequest,
     ScoreResponse,
 )
 from nexvia_fraud.audit.chain import verify_audit
 from nexvia_fraud.config import Settings
-from nexvia_fraud.db.models import AuditLog, Transaction
+from nexvia_fraud.db.models import AuditLog, DriftReport, Transaction
 from nexvia_fraud.db.repo import (
     count_prior_cases,
     decide,
     get_alert,
+    latest_drift_report,
     list_alerts,
     list_audit,
+    list_retraining_requests,
     list_transactions,
+    resolve_retraining_request,
 )
 from nexvia_fraud.features.service import FeatureService
 from nexvia_fraud.models.scorer import Scorer
@@ -46,6 +51,20 @@ def _transaction_payload(transaction: Transaction) -> dict:
         "mode": transaction.mode,
         "model_version": transaction.model_version,
         "features": transaction.features,
+    }
+
+
+def _drift_payload(report: DriftReport) -> dict:
+    summary = report.summary or {}
+    return {
+        "id": report.id,
+        "created_at": iso_utc(report.created_at),
+        "drift_share": report.drift_share,
+        "dataset_drift": report.dataset_drift,
+        "n_reference": report.n_reference,
+        "n_current": report.n_current,
+        "method": summary.get("method", "evidently:DataDriftPreset"),
+        "columns": summary.get("columns", []),
     }
 
 
@@ -166,5 +185,34 @@ def create_app(
     @app.get("/metrics", response_class=PlainTextResponse)
     def prometheus_metrics() -> str:
         return metrics.render()
+
+    @app.get("/drift/latest")
+    def drift_latest() -> dict:
+        with session_factory() as session:
+            report = latest_drift_report(session)
+            return {"report": _drift_payload(report) if report is not None else None}
+
+    @app.get("/retraining-requests")
+    def retraining_requests() -> dict:
+        with session_factory() as session:
+            rows = list_retraining_requests(session)
+            return {
+                "requests": [
+                    RetrainingRequestOut.model_validate(row).model_dump() for row in rows
+                ]
+            }
+
+    @app.post("/retraining-requests/{request_id}/resolve")
+    def resolve_request(request_id: str, body: ResolveRetrainingRequest) -> dict:
+        try:
+            with session_factory() as session:
+                row = resolve_retraining_request(
+                    session, request_id, body.status, body.resolved_by
+                )
+                return {"request": RetrainingRequestOut.model_validate(row).model_dump()}
+        except ValueError as exc:
+            message = str(exc)
+            status_code = 404 if "not found" in message else 409
+            raise HTTPException(status_code=status_code, detail=message) from exc
 
     return app
