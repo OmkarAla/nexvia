@@ -43,3 +43,12 @@ def test_training_accepts_csv_string_timestamps(tmp_path, demo_df):
     metrics = train_model(frame, str(tmp_path / "artifacts"), run_id="csv-run")
 
     assert metrics["pr_auc"] > 0.5
+
+
+def test_training_writes_reference_snapshot(tmp_path, demo_df):
+    metrics = train_model(demo_df, str(tmp_path), run_id="ref")
+
+    reference = pd.read_parquet(tmp_path / "reference_features.parquet")
+
+    assert len(reference) == metrics["n_train"]
+    assert list(reference.columns) == metrics["feature_names"]

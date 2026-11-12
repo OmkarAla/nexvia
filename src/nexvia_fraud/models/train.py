@@ -120,6 +120,9 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     model.get_booster().save_model(str(out / "model.json"))
     (out / "feature_names.json").write_text(json.dumps(features, indent=2))
+    pd.DataFrame(X_train, columns=features).to_parquet(
+        out / "reference_features.parquet", index=False
+    )
 
     metrics = {
         "run_id": run_id,
