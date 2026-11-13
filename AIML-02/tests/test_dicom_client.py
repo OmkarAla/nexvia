@@ -1,6 +1,5 @@
 import httpx
 import pytest
-from pydicom.dataset import Dataset
 
 from nexvia_imaging.dicom.client import OrthancClient
 
@@ -59,16 +58,23 @@ def test_series_instances_parses_sop_uids():
 
 
 def test_download_instance_reads_dicom_bytes():
-    dataset = Dataset()
+    from io import BytesIO
+
+    from pydicom.dataset import FileDataset, FileMetaDataset
+    from pydicom.uid import ExplicitVRLittleEndian
+
+    file_meta = FileMetaDataset()
+    file_meta.MediaStorageSOPClassUID = "1.2.840.10008.5.1.4.1.1.2"
+    file_meta.MediaStorageSOPInstanceUID = "5.5.5"
+    file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+
+    dataset = FileDataset(None, {}, file_meta=file_meta, preamble=b"\0" * 128)
     dataset.SOPClassUID = "1.2.840.10008.5.1.4.1.1.2"
     dataset.SOPInstanceUID = "5.5.5"
     dataset.PatientName = "SYNTHETIC^DEMO"
-    dataset.is_little_endian = True
-    dataset.is_implicit_VR = True
-    from io import BytesIO
 
     buffer = BytesIO()
-    dataset.save_as(buffer, write_like_original=False)
+    dataset.save_as(buffer, enforce_file_format=True)
     payload = buffer.getvalue()
 
     def handler(request: httpx.Request) -> httpx.Response:

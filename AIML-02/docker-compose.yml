@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nexvia
+      POSTGRES_PASSWORD: nexvia
+      POSTGRES_DB: nexvia
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexvia -d nexvia"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  orthanc:
+    image: orthancteam/orthanc:26.11.0
+    ports:
+      - "8042:8042"
+      - "4242:4242"
+    environment:
+      ORTHANC__NAME: nexvia
+      ORTHANC__AUTHENTICATION_ENABLED: "false"
+      ORTHANC__DICOM_WEB__ENABLE: "true"
+      ORTHANC__DICOM_WEB__ROOT: /dicom-web/
+      ORTHANC__REMOTE_ACCESS_ALLOWED: "true"
+      ORTHANC__STORAGE_DIRECTORY: /var/lib/orthanc/db
+    volumes:
+      - orthanc-data:/var/lib/orthanc/db
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8042/system"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  pgdata:
+  orthanc-data:

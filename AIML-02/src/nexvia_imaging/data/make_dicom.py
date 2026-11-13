@@ -11,7 +11,7 @@ import uuid
 from pathlib import Path
 
 import numpy as np
-from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
+from pydicom.dataset import FileDataset, FileMetaDataset
 from pydicom.uid import ExplicitVRLittleEndian
 
 CR_IMAGE_STORAGE = "1.2.840.10008.5.1.4.1.1.1"
