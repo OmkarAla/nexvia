@@ -1,0 +1,55 @@
+{
+  "synthetic": true,
+  "seed": 7,
+  "studies": [
+    {
+      "study_uid": "2.25.335859628885313738960916513112685690606",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 00",
+      "n_instances": 1,
+      "path": "cr/study-00"
+    },
+    {
+      "study_uid": "2.25.303868612198942085437985270625235096205",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 01",
+      "n_instances": 1,
+      "path": "cr/study-01"
+    },
+    {
+      "study_uid": "2.25.187916226661696065911931163806683798373",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 02",
+      "n_instances": 1,
+      "path": "cr/study-02"
+    },
+    {
+      "study_uid": "2.25.206552617207319211314320581687531013192",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 03",
+      "n_instances": 1,
+      "path": "cr/study-03"
+    },
+    {
+      "study_uid": "2.25.67235379077497443059482526338441886646",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 04",
+      "n_instances": 1,
+      "path": "cr/study-04"
+    },
+    {
+      "study_uid": "2.25.310394080467028405176490970223295186570",
+      "modality": "CR",
+      "description": "SYNTHETIC CHEST - EDUCATION ONLY - 05",
+      "n_instances": 1,
+      "path": "cr/study-05"
+    },
+    {
+      "study_uid": "2.25.225501496148684867950998768610411072275",
+      "modality": "CT",
+      "description": "SYNTHETIC ABDOMEN - EDUCATION ONLY - 00",
+      "n_instances": 20,
+      "path": "ct/study-00"
+    }
+  ]
+}
