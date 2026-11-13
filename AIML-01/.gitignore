@@ -13,3 +13,5 @@ node_modules/
 dashboard/dist/
 *.egg-info/
 build/
+data/raw/
+data/processed/

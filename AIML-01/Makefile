@@ -6,6 +6,11 @@ setup:
 data:
 	python -m nexvia_fraud.data.generate_demo --n 5000 --out data/demo/transactions.csv
 
+data-real:
+	mkdir -p data/raw/ieee
+	kaggle competitions download -c ieee-fraud-detection -p data/raw/ieee
+	cd data/raw/ieee && unzip -o '*.zip' && rm '*.zip'
+
 train:
 	python -m nexvia_fraud.models.train --data data/demo/transactions.csv --out artifacts/demo --run-id demo-001
 

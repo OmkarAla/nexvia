@@ -83,6 +83,7 @@ CI runs the unit and dashboard suites on every push; the integration suite runs 
 - Model card: [`AIML-01/docs/model-card.md`](AIML-01/docs/model-card.md)
 - Limitations: [`AIML-01/docs/limitations.md`](AIML-01/docs/limitations.md)
 - Kubernetes: [`AIML-01/docs/kubernetes.md`](AIML-01/docs/kubernetes.md)
+- Data and Kaggle setup: [`docs/data-setup.md`](docs/data-setup.md)
 
 ## Submission note
 
