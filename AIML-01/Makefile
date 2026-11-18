@@ -33,6 +33,10 @@ test:
 test-integration:
 	python -m pytest -m integration -q
 
+feast:
+	python scripts/build_feast_features.py
+	python -c "from feast import FeatureStore; from feature_repo.features import CARD, views; FeatureStore(repo_path='feature_repo').apply([CARD, *views])"
+
 k8s:
 	kubectl kustomize k8s/overlays/kind > /dev/null
 	echo "kustomize build OK"

@@ -95,6 +95,25 @@ Kafka and the consumer require Docker Compose; the API, scorer, and dashboard do
 7. `GET /audit` returns the hash-chained log with `valid: true`.
 8. `GET /metrics` shows request count and in-process p50/p95/p99.
 
+## Feature store (Feast)
+
+The 13 features are defined once in `feature_repo/features.py` and grouped into the design's four views: `txn_velocity`, `amount_profile`, `entity_change`, `card_graph_stats`.
+
+```bash
+python scripts/build_feast_features.py          # offline Parquet, point-in-time rows
+python -m pytest tests/test_feast.py -q         # historical retrieval + parity
+```
+
+Apply the definitions and materialize:
+
+```bash
+make feast
+```
+
+`feature_repo/feature_store.yaml` uses a SQLite online store locally; `feature_store.redis.yaml` switches to Redis for Compose. `store.materialize(...)` populates the online store, and `get_online_features` returns the latest per card.
+
+**Status:** the offline definition, point-in-time historical retrieval, materialization, and online lookup are working and parity-tested against `FeatureService`. The FastAPI and consumer still score through the in-process `FeatureService`; switching serving to Feast online lookups is the remaining handoff and needs a streaming feature writer so historical replay cannot read future values.
+
 ## Experiment tracking
 
 Training logs to MLflow. By default it uses a local SQLite store (`mlruns.db`, gitignored); the Compose `mlflow` service exposes a UI at <http://localhost:5000>.

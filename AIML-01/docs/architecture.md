@@ -125,6 +125,19 @@ flowchart LR
 - Evaluation uses embeddings from a graph built only from rows before the test window. Serving uses a nightly full-graph precompute; that is a freshness/leakage trade-off documented in the model card.
 - The blender is a two-coefficient logistic regression fit on the validation window. A card with no GNN score falls back to XGBoost-only, and the response says which path ran.
 
+## Feature store (Feast)
+
+```mermaid
+flowchart LR
+    CSV[demo transactions] --> B[build_feast_features.py]
+    B --> P[(offline Parquet)]
+    P -->|materialize| R[(SQLite / Redis online)]
+    P -->|get_historical_features| T[training parity]
+    R -->|get_online_features| S[serving handoff]
+```
+
+`FeatureService` remains the serving path in this slice. Feast owns the offline definition, point-in-time retrieval, and materialization; a parity test asserts that historical retrieval matches `FeatureService` values for sampled transactions.
+
 ## Drift flow
 
 ```mermaid
