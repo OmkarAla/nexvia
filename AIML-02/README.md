@@ -19,6 +19,14 @@ DICOM → Orthanc → worker → DenseNet-121 + Grad-CAM → Postgres → FastAP
 | React + Cornerstone3D viewer | done |
 | 3D U-Net (MSD spleen), DVC | depth phase |
 
+## Screenshots
+
+| CR study with Grad-CAM | CT study |
+|---|---|
+| ![CR overlay](docs/screenshots/imaging-cr-overlay.png) | ![CT overlay](docs/screenshots/imaging-ct-study.png) |
+
+![CR clean](docs/screenshots/imaging-cr-clean.png)
+
 ## Run
 
 ```bash

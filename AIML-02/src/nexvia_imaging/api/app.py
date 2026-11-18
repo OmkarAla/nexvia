@@ -24,6 +24,7 @@ def build_app():
         session_factory,
         overlay_dir="data/overlays",
         model_version=model_version,
+        demo_dir=settings.demo_data_dir,
     )
 
 

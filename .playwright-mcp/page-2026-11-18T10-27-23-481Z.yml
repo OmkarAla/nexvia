@@ -1,0 +1,36 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [aria-hidden] [ref=f4e6]: "N"
+      - generic [ref=f4e7]:
+        - heading "Nexvia Fraud Review" [level=1] [ref=f4e8]
+        - paragraph [ref=f4e9]: Real-time scoring · analyst case workflow
+    - generic [ref=f4e10]: model demo-001
+  - generic [ref=f4e13]: Demo system · synthetic data · not a production fraud engine
+  - navigation "Views" [ref=f4e14]:
+    - button "Case queue" [ref=f4e15] [cursor=pointer]
+    - button "Live feed" [ref=f4e16] [cursor=pointer]
+    - button "Model health" [ref=f4e17] [cursor=pointer]
+  - main [ref=f4e18]:
+    - generic [ref=f4e19]:
+      - generic [ref=f4e20]:
+        - generic [ref=f4e21]:
+          - heading "Case queue" [level=2] [ref=f4e22]
+          - generic [ref=f4e23]: 0 shown
+        - generic [ref=f4e24]:
+          - generic [ref=f4e25]:
+            - text: Status
+            - combobox "Status" [ref=f4e26]:
+              - option "Open" [selected]
+              - option "Approved"
+              - option "Rejected"
+              - option "All"
+          - generic [ref=f4e27]:
+            - text: Min score
+            - spinbutton "Min score" [ref=f4e28]: "0.5"
+        - list
+        - paragraph [ref=f4e29]: No alerts match these filters.
+      - generic [ref=f4e30]:
+        - heading "Case detail" [level=2] [ref=f4e31]
+        - paragraph [ref=f4e32]: Select an alert to inspect the transaction, its explanation, and linked entities.
+  - contentinfo [ref=f4e33]: Scores are illustrative. Every decision is written to a hash-chained audit log.

@@ -10,6 +10,14 @@ Real-time transaction fraud scoring: a replayed Kafka stream, an XGBoost scorer 
 
 ---
 
+## Screenshots
+
+| Case review | Model health |
+|---|---|
+| ![Case detail](docs/screenshots/fraud-case-detail.png) | ![Model health](docs/screenshots/fraud-model-health.png) |
+
+![Live feed](docs/screenshots/fraud-live-feed.png)
+
 ## Architecture
 
 ```mermaid

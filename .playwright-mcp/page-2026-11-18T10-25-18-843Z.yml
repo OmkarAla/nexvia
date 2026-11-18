@@ -1,0 +1,155 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: "N"
+      - generic [ref=f3e7]:
+        - heading "Nexvia Imaging Review" [level=1] [ref=f3e8]
+        - paragraph [ref=f3e9]: DICOM · AI findings · radiologist decision
+    - generic [ref=f3e10]: model colab-nih-sample-001
+  - generic [ref=f3e11]: For education and research only. Not a medical device. Do not use for clinical decisions.
+  - main [ref=f3e12]:
+    - generic [ref=f3e13]:
+      - generic [ref=f3e14]:
+        - heading "Studies" [level=2] [ref=f3e15]
+        - combobox [ref=f3e16]:
+          - option "All" [selected]
+          - option "Analyzed"
+          - option "Reviewed"
+      - list [ref=f3e22]:
+        - listitem [ref=f3e23]:
+          - button "CT SYNTHETIC ABDOMEN - EDUCATION ONLY - 00 Nov 18, 03:51 PM 61.1% analyzed" [active] [ref=f3e24] [cursor=pointer]:
+            - generic [ref=f3e25]: CT
+            - generic [ref=f3e26]:
+              - generic [ref=f3e27]: SYNTHETIC ABDOMEN - EDUCATION ONLY - 00
+              - generic [ref=f3e28]: Nov 18, 03:51 PM
+            - generic [ref=f3e29]:
+              - generic [ref=f3e30]: 61.1%
+              - generic [ref=f3e31]: analyzed
+        - listitem [ref=f3e32]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 05 Nov 18, 03:51 PM 11.9% analyzed" [ref=f3e33] [cursor=pointer]:
+            - generic [ref=f3e34]: CR
+            - generic [ref=f3e35]:
+              - generic [ref=f3e36]: SYNTHETIC CHEST - EDUCATION ONLY - 05
+              - generic [ref=f3e37]: Nov 18, 03:51 PM
+            - generic [ref=f3e38]:
+              - generic [ref=f3e39]: 11.9%
+              - generic [ref=f3e40]: analyzed
+        - listitem [ref=f3e41]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 04 Nov 18, 03:51 PM 14.5% analyzed" [ref=f3e42] [cursor=pointer]:
+            - generic [ref=f3e43]: CR
+            - generic [ref=f3e44]:
+              - generic [ref=f3e45]: SYNTHETIC CHEST - EDUCATION ONLY - 04
+              - generic [ref=f3e46]: Nov 18, 03:51 PM
+            - generic [ref=f3e47]:
+              - generic [ref=f3e48]: 14.5%
+              - generic [ref=f3e49]: analyzed
+        - listitem [ref=f3e50]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 03 Nov 18, 03:51 PM 12.5% analyzed" [ref=f3e51] [cursor=pointer]:
+            - generic [ref=f3e52]: CR
+            - generic [ref=f3e53]:
+              - generic [ref=f3e54]: SYNTHETIC CHEST - EDUCATION ONLY - 03
+              - generic [ref=f3e55]: Nov 18, 03:51 PM
+            - generic [ref=f3e56]:
+              - generic [ref=f3e57]: 12.5%
+              - generic [ref=f3e58]: analyzed
+        - listitem [ref=f3e59]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 02 Nov 18, 03:51 PM 13.3% analyzed" [ref=f3e60] [cursor=pointer]:
+            - generic [ref=f3e61]: CR
+            - generic [ref=f3e62]:
+              - generic [ref=f3e63]: SYNTHETIC CHEST - EDUCATION ONLY - 02
+              - generic [ref=f3e64]: Nov 18, 03:51 PM
+            - generic [ref=f3e65]:
+              - generic [ref=f3e66]: 13.3%
+              - generic [ref=f3e67]: analyzed
+        - listitem [ref=f3e68]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 01 Nov 18, 03:51 PM 12.2% analyzed" [ref=f3e69] [cursor=pointer]:
+            - generic [ref=f3e70]: CR
+            - generic [ref=f3e71]:
+              - generic [ref=f3e72]: SYNTHETIC CHEST - EDUCATION ONLY - 01
+              - generic [ref=f3e73]: Nov 18, 03:51 PM
+            - generic [ref=f3e74]:
+              - generic [ref=f3e75]: 12.2%
+              - generic [ref=f3e76]: analyzed
+        - listitem [ref=f3e77]:
+          - button "CR SYNTHETIC CHEST - EDUCATION ONLY - 00 Nov 18, 03:51 PM 12.6% analyzed" [ref=f3e78] [cursor=pointer]:
+            - generic [ref=f3e79]: CR
+            - generic [ref=f3e80]:
+              - generic [ref=f3e81]: SYNTHETIC CHEST - EDUCATION ONLY - 00
+              - generic [ref=f3e82]: Nov 18, 03:51 PM
+            - generic [ref=f3e83]:
+              - generic [ref=f3e84]: 12.6%
+              - generic [ref=f3e85]: analyzed
+    - generic [ref=f3e86]:
+      - generic [ref=f3e87]:
+        - generic [ref=f3e88]:
+          - generic [ref=f3e89]:
+            - heading "SYNTHETIC ABDOMEN - EDUCATION ONLY - 00" [level=2] [ref=f3e90]
+            - paragraph [ref=f3e91]: 2.25.225501496148684867950998768610411072275
+          - generic [ref=f3e92]:
+            - button "Grad-CAM" [ref=f3e93] [cursor=pointer]
+            - combobox [ref=f3e94]:
+              - option "Finding 1" [selected]
+              - option "Finding 2"
+        - generic [ref=f3e95]:
+          - img "Rendered DICOM slice" [ref=f3e97]
+          - img "Grad-CAM overlay"
+      - generic [ref=f3e98]:
+        - generic [ref=f3e99]:
+          - generic [ref=f3e100]:
+            - heading "AI findings" [level=2] [ref=f3e101]
+            - generic [ref=f3e102]: analyzed
+          - generic [ref=f3e103]:
+            - paragraph [ref=f3e104]: Ranked model outputs. Grad-CAM shows model attention, not clinical evidence.
+            - list [ref=f3e105]:
+              - listitem [ref=f3e106]:
+                - generic [ref=f3e107]: Infiltration
+                - generic [ref=f3e110]: 61.1%
+              - listitem [ref=f3e111]:
+                - generic [ref=f3e112]: Pleural Thickening
+                - generic [ref=f3e115]: 51.0%
+              - listitem [ref=f3e116]:
+                - generic [ref=f3e117]: Consolidation
+                - generic [ref=f3e120]: 8.4%
+              - listitem [ref=f3e121]:
+                - generic [ref=f3e122]: Pneumothorax
+                - generic [ref=f3e125]: 3.5%
+              - listitem [ref=f3e126]:
+                - generic [ref=f3e127]: Effusion
+                - generic [ref=f3e130]: 2.7%
+              - listitem [ref=f3e131]:
+                - generic [ref=f3e132]: Atelectasis
+                - generic [ref=f3e135]: 1.9%
+              - listitem [ref=f3e136]:
+                - generic [ref=f3e137]: Edema
+                - generic [ref=f3e140]: 1.8%
+              - listitem [ref=f3e141]:
+                - generic [ref=f3e142]: Mass
+                - generic [ref=f3e145]: 1.3%
+              - listitem [ref=f3e146]:
+                - generic [ref=f3e147]: Cardiomegaly
+                - generic [ref=f3e150]: 1.2%
+              - listitem [ref=f3e151]:
+                - generic [ref=f3e152]: Nodule
+                - generic [ref=f3e155]: 1.1%
+              - listitem [ref=f3e156]:
+                - generic [ref=f3e157]: Pneumonia
+                - generic [ref=f3e160]: 0.8%
+              - listitem [ref=f3e161]:
+                - generic [ref=f3e162]: Fibrosis
+                - generic [ref=f3e165]: 0.5%
+              - listitem [ref=f3e166]:
+                - generic [ref=f3e167]: Emphysema
+                - generic [ref=f3e170]: 0.5%
+              - listitem [ref=f3e171]:
+                - generic [ref=f3e172]: Hernia
+                - generic [ref=f3e175]: 0.2%
+        - generic [ref=f3e176]:
+          - generic [ref=f3e177]:
+            - heading "Review" [level=2] [ref=f3e178]
+            - generic [ref=f3e179]: 20 instances
+          - generic [ref=f3e180]:
+            - textbox "Radiologist comment (required, written to the audit log)" [ref=f3e181]
+            - generic [ref=f3e182]:
+              - button "Approve" [disabled] [ref=f3e183]
+              - button "Reject" [disabled] [ref=f3e184]
+  - contentinfo [ref=f3e21]: Synthetic demo data. Decisions are written to a hash-chained audit log.

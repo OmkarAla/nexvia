@@ -45,18 +45,34 @@ interface DicomJson {
 }
 
 export async function getImageIds(studyUid: string): Promise<string[]> {
-  const seriesResponse = await fetch(`${ORTHANC_URL}/dicom-web/studies/${studyUid}/series`);
-  const series = (await seriesResponse.json()) as DicomJson[];
-  if (!series.length) return [];
-  const seriesUid = series[0]["0020000E"]?.Value?.[0];
-  if (!seriesUid) return [];
+  try {
+    const seriesResponse = await fetch(
+      `${ORTHANC_URL}/dicom-web/studies/${studyUid}/series`,
+    );
+    const series = (await seriesResponse.json()) as DicomJson[];
+    if (series.length) {
+      const seriesUid = series[0]["0020000E"]?.Value?.[0];
+      if (seriesUid) {
+        const instanceResponse = await fetch(
+          `${ORTHANC_URL}/dicom-web/studies/${studyUid}/series/${seriesUid}/instances`,
+        );
+        const instances = (await instanceResponse.json()) as DicomJson[];
+        const ids = instances
+          .map((item) => item["00080018"]?.Value?.[0])
+          .filter((uid): uid is string => Boolean(uid))
+          .map((uid) => `wadouri:${ORTHANC_URL}/instances/${uid}/file`);
+        if (ids.length) return ids;
+      }
+    }
+  } catch {
+    // Orthanc is not running; fall through to the committed demo files.
+  }
 
-  const instanceResponse = await fetch(
-    `${ORTHANC_URL}/dicom-web/studies/${studyUid}/series/${seriesUid}/instances`,
-  );
-  const instances = (await instanceResponse.json()) as DicomJson[];
-  return instances
-    .map((item) => item["00080018"]?.Value?.[0])
-    .filter((uid): uid is string => Boolean(uid))
-    .map((uid) => `wadouri:${ORTHANC_URL}/instances/${uid}/file`);
+  const fallback = await fetch(`${API_URL}/demo/studies`);
+  if (!fallback.ok) return [];
+  const payload = (await fallback.json()) as {
+    studies: Array<{ study_uid: string; image_urls: string[] }>;
+  };
+  const match = payload.studies.find((study) => study.study_uid === studyUid);
+  return (match?.image_urls ?? []).map((url) => `wadouri:${API_URL}${url}`);
 }

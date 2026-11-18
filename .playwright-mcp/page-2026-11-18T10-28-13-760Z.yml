@@ -1,0 +1,668 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [aria-hidden] [ref=f4e6]: "N"
+      - generic [ref=f4e7]:
+        - heading "Nexvia Fraud Review" [level=1] [ref=f4e8]
+        - paragraph [ref=f4e9]: Real-time scoring · analyst case workflow
+    - generic [ref=f4e10]: model demo-001
+  - generic [ref=f4e13]: Demo system · synthetic data · not a production fraud engine
+  - navigation "Views" [ref=f4e14]:
+    - button "Case queue" [ref=f4e15] [cursor=pointer]
+    - button "Live feed" [active] [ref=f4e16] [cursor=pointer]
+    - button "Model health" [ref=f4e17] [cursor=pointer]
+  - main [ref=f4e18]:
+    - generic [ref=f4e495]:
+      - generic [ref=f4e496]:
+        - heading "Live feed" [level=2] [ref=f4e497]
+        - generic [ref=f4e498]: 80 most recent
+      - table [ref=f4e499]:
+        - rowgroup [ref=f4e500]:
+          - row [ref=f4e501]:
+            - columnheader "Time" [ref=f4e502]
+            - columnheader "Transaction" [ref=f4e503]
+            - columnheader "Card" [ref=f4e504]
+            - columnheader "Amount" [ref=f4e505]
+            - columnheader "Score" [ref=f4e506]
+        - rowgroup [ref=f4e507]:
+          - row [ref=f4e508]:
+            - cell "Jan 22, 01:33 AM" [ref=f4e509]
+            - cell "txn-003498" [ref=f4e510]
+            - cell "card-0125" [ref=f4e511]
+            - cell "$94.49" [ref=f4e512]
+            - cell "87.9% B" [ref=f4e513]:
+              - text: 87.9%
+              - generic "blended with the GNN" [ref=f4e514]: B
+          - row [ref=f4e515]:
+            - cell "Jan 22, 12:46 AM" [ref=f4e516]
+            - cell "txn-003489" [ref=f4e517]
+            - cell "card-0601" [ref=f4e518]
+            - cell "$14.21" [ref=f4e519]
+            - cell "7.7% B" [ref=f4e520]:
+              - text: 7.7%
+              - generic "blended with the GNN" [ref=f4e521]: B
+          - row [ref=f4e522]:
+            - cell "Jan 22, 12:04 AM" [ref=f4e523]
+            - cell "txn-003487" [ref=f4e524]
+            - cell "card-0331" [ref=f4e525]
+            - cell "$34.46" [ref=f4e526]
+            - cell "0.2% B" [ref=f4e527]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e528]: B
+          - row [ref=f4e529]:
+            - cell "Jan 21, 09:56 PM" [ref=f4e530]
+            - cell "txn-003468" [ref=f4e531]
+            - cell "card-0352" [ref=f4e532]
+            - cell "$19.24" [ref=f4e533]
+            - cell "0.4% B" [ref=f4e534]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e535]: B
+          - row [ref=f4e536]:
+            - cell "Jan 21, 09:49 PM" [ref=f4e537]
+            - cell "txn-003467" [ref=f4e538]
+            - cell "card-0361" [ref=f4e539]
+            - cell "$7.33" [ref=f4e540]
+            - cell "0.4% B" [ref=f4e541]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e542]: B
+          - row [ref=f4e543]:
+            - cell "Jan 21, 09:35 PM" [ref=f4e544]
+            - cell "txn-003466" [ref=f4e545]
+            - cell "card-0594" [ref=f4e546]
+            - cell "$19.53" [ref=f4e547]
+            - cell "0.4% B" [ref=f4e548]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e549]: B
+          - row [ref=f4e550]:
+            - cell "Jan 21, 09:17 PM" [ref=f4e551]
+            - cell "txn-003464" [ref=f4e552]
+            - cell "card-0449" [ref=f4e553]
+            - cell "$89.90" [ref=f4e554]
+            - cell "0.2% B" [ref=f4e555]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e556]: B
+          - row [ref=f4e557]:
+            - cell "Jan 21, 09:01 PM" [ref=f4e558]
+            - cell "txn-003462" [ref=f4e559]
+            - cell "card-0496" [ref=f4e560]
+            - cell "$36.65" [ref=f4e561]
+            - cell "0.1% B" [ref=f4e562]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e563]: B
+          - row [ref=f4e564]:
+            - cell "Jan 21, 08:48 PM" [ref=f4e565]
+            - cell "txn-003459" [ref=f4e566]
+            - cell "card-0042" [ref=f4e567]
+            - cell "$88.34" [ref=f4e568]
+            - cell "0.3% B" [ref=f4e569]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e570]: B
+          - row [ref=f4e571]:
+            - cell "Jan 21, 08:47 PM" [ref=f4e572]
+            - cell "txn-003458" [ref=f4e573]
+            - cell "card-0616" [ref=f4e574]
+            - cell "$10.79" [ref=f4e575]
+            - cell "1.2% B" [ref=f4e576]:
+              - text: 1.2%
+              - generic "blended with the GNN" [ref=f4e577]: B
+          - row [ref=f4e578]:
+            - cell "Jan 21, 07:54 PM" [ref=f4e579]
+            - cell "txn-003452" [ref=f4e580]
+            - cell "card-0355" [ref=f4e581]
+            - cell "$30.97" [ref=f4e582]
+            - cell "0.8% B" [ref=f4e583]:
+              - text: 0.8%
+              - generic "blended with the GNN" [ref=f4e584]: B
+          - row [ref=f4e585]:
+            - cell "Jan 21, 05:33 PM" [ref=f4e586]
+            - cell "txn-003442" [ref=f4e587]
+            - cell "card-0027" [ref=f4e588]
+            - cell "$25.15" [ref=f4e589]
+            - cell "0.3% B" [ref=f4e590]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e591]: B
+          - row [ref=f4e592]:
+            - cell "Jan 21, 04:48 PM" [ref=f4e593]
+            - cell "txn-003437" [ref=f4e594]
+            - cell "card-0261" [ref=f4e595]
+            - cell "$25.07" [ref=f4e596]
+            - cell "0.1% B" [ref=f4e597]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e598]: B
+          - row [ref=f4e599]:
+            - cell "Jan 21, 04:23 PM" [ref=f4e600]
+            - cell "txn-003431" [ref=f4e601]
+            - cell "card-0272" [ref=f4e602]
+            - cell "$13.80" [ref=f4e603]
+            - cell "0.2% B" [ref=f4e604]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e605]: B
+          - row [ref=f4e606]:
+            - cell "Jan 21, 04:21 PM" [ref=f4e607]
+            - cell "txn-003430" [ref=f4e608]
+            - cell "card-0394" [ref=f4e609]
+            - cell "$192.12" [ref=f4e610]
+            - cell "1.1% B" [ref=f4e611]:
+              - text: 1.1%
+              - generic "blended with the GNN" [ref=f4e612]: B
+          - row [ref=f4e613]:
+            - cell "Jan 21, 04:15 PM" [ref=f4e614]
+            - cell "txn-003429" [ref=f4e615]
+            - cell "card-0278" [ref=f4e616]
+            - cell "$24.39" [ref=f4e617]
+            - cell "0.4% B" [ref=f4e618]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e619]: B
+          - row [ref=f4e620]:
+            - cell "Jan 21, 02:28 PM" [ref=f4e621]
+            - cell "txn-003415" [ref=f4e622]
+            - cell "card-0532" [ref=f4e623]
+            - cell "$24.92" [ref=f4e624]
+            - cell "0.1% B" [ref=f4e625]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e626]: B
+          - row [ref=f4e627]:
+            - cell "Jan 21, 02:26 PM" [ref=f4e628]
+            - cell "txn-003414" [ref=f4e629]
+            - cell "card-0130" [ref=f4e630]
+            - cell "$8.45" [ref=f4e631]
+            - cell "0.0% B" [ref=f4e632]:
+              - text: 0.0%
+              - generic "blended with the GNN" [ref=f4e633]: B
+          - row [ref=f4e634]:
+            - cell "Jan 21, 02:15 PM" [ref=f4e635]
+            - cell "txn-003412" [ref=f4e636]
+            - cell "card-0288" [ref=f4e637]
+            - cell "$33.24" [ref=f4e638]
+            - cell "0.1% B" [ref=f4e639]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e640]: B
+          - row [ref=f4e641]:
+            - cell "Jan 21, 12:50 PM" [ref=f4e642]
+            - cell "txn-003404" [ref=f4e643]
+            - cell "card-0397" [ref=f4e644]
+            - cell "$18.61" [ref=f4e645]
+            - cell "0.2% B" [ref=f4e646]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e647]: B
+          - row [ref=f4e648]:
+            - cell "Jan 21, 12:37 PM" [ref=f4e649]
+            - cell "txn-003403" [ref=f4e650]
+            - cell "card-0334" [ref=f4e651]
+            - cell "$31.77" [ref=f4e652]
+            - cell "0.2% B" [ref=f4e653]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e654]: B
+          - row [ref=f4e655]:
+            - cell "Jan 21, 11:34 AM" [ref=f4e656]
+            - cell "txn-003396" [ref=f4e657]
+            - cell "card-0550" [ref=f4e658]
+            - cell "$76.61" [ref=f4e659]
+            - cell "0.1% B" [ref=f4e660]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e661]: B
+          - row [ref=f4e662]:
+            - cell "Jan 21, 11:21 AM" [ref=f4e663]
+            - cell "txn-003391" [ref=f4e664]
+            - cell "card-0592" [ref=f4e665]
+            - cell "$42.55" [ref=f4e666]
+            - cell "0.3% B" [ref=f4e667]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e668]: B
+          - row [ref=f4e669]:
+            - cell "Jan 21, 10:36 AM" [ref=f4e670]
+            - cell "txn-003382" [ref=f4e671]
+            - cell "card-0035" [ref=f4e672]
+            - cell "$78.00" [ref=f4e673]
+            - cell "0.4% B" [ref=f4e674]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e675]: B
+          - row [ref=f4e676]:
+            - cell "Jan 21, 09:29 AM" [ref=f4e677]
+            - cell "txn-003372" [ref=f4e678]
+            - cell "card-0535" [ref=f4e679]
+            - cell "$58.42" [ref=f4e680]
+            - cell "0.3% B" [ref=f4e681]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e682]: B
+          - row [ref=f4e683]:
+            - cell "Jan 21, 08:52 AM" [ref=f4e684]
+            - cell "txn-003366" [ref=f4e685]
+            - cell "card-0201" [ref=f4e686]
+            - cell "$19.36" [ref=f4e687]
+            - cell "95.4% B" [ref=f4e688]:
+              - text: 95.4%
+              - generic "blended with the GNN" [ref=f4e689]: B
+          - row [ref=f4e690]:
+            - cell "Jan 21, 08:40 AM" [ref=f4e691]
+            - cell "txn-003363" [ref=f4e692]
+            - cell "card-0062" [ref=f4e693]
+            - cell "$4.85" [ref=f4e694]
+            - cell "0.1% B" [ref=f4e695]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e696]: B
+          - row [ref=f4e697]:
+            - cell "Jan 21, 08:18 AM" [ref=f4e698]
+            - cell "txn-003359" [ref=f4e699]
+            - cell "card-0498" [ref=f4e700]
+            - cell "$30.38" [ref=f4e701]
+            - cell "0.5% B" [ref=f4e702]:
+              - text: 0.5%
+              - generic "blended with the GNN" [ref=f4e703]: B
+          - row [ref=f4e704]:
+            - cell "Jan 21, 07:10 AM" [ref=f4e705]
+            - cell "txn-003346" [ref=f4e706]
+            - cell "card-0584" [ref=f4e707]
+            - cell "$20.63" [ref=f4e708]
+            - cell "0.4% B" [ref=f4e709]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e710]: B
+          - row [ref=f4e711]:
+            - cell "Jan 21, 06:37 AM" [ref=f4e712]
+            - cell "txn-003345" [ref=f4e713]
+            - cell "card-0583" [ref=f4e714]
+            - cell "$30.62" [ref=f4e715]
+            - cell "1.1% B" [ref=f4e716]:
+              - text: 1.1%
+              - generic "blended with the GNN" [ref=f4e717]: B
+          - row [ref=f4e718]:
+            - cell "Jan 21, 06:34 AM" [ref=f4e719]
+            - cell "txn-003343" [ref=f4e720]
+            - cell "card-0516" [ref=f4e721]
+            - cell "$41.52" [ref=f4e722]
+            - cell "0.2% B" [ref=f4e723]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e724]: B
+          - row [ref=f4e725]:
+            - cell "Jan 21, 06:13 AM" [ref=f4e726]
+            - cell "txn-003340" [ref=f4e727]
+            - cell "card-0073" [ref=f4e728]
+            - cell "$20.15" [ref=f4e729]
+            - cell "45.7% B" [ref=f4e730]:
+              - text: 45.7%
+              - generic "blended with the GNN" [ref=f4e731]: B
+          - row [ref=f4e732]:
+            - cell "Jan 21, 05:25 AM" [ref=f4e733]
+            - cell "txn-003333" [ref=f4e734]
+            - cell "card-0180" [ref=f4e735]
+            - cell "$49.88" [ref=f4e736]
+            - cell "0.2% B" [ref=f4e737]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e738]: B
+          - row [ref=f4e739]:
+            - cell "Jan 21, 05:21 AM" [ref=f4e740]
+            - cell "txn-003332" [ref=f4e741]
+            - cell "card-0106" [ref=f4e742]
+            - cell "$33.63" [ref=f4e743]
+            - cell "0.4% B" [ref=f4e744]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e745]: B
+          - row [ref=f4e746]:
+            - cell "Jan 21, 04:55 AM" [ref=f4e747]
+            - cell "txn-003328" [ref=f4e748]
+            - cell "card-0266" [ref=f4e749]
+            - cell "$30.51" [ref=f4e750]
+            - cell "0.3% B" [ref=f4e751]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e752]: B
+          - row [ref=f4e753]:
+            - cell "Jan 21, 03:31 AM" [ref=f4e754]
+            - cell "txn-003320" [ref=f4e755]
+            - cell "card-0387" [ref=f4e756]
+            - cell "$11.86" [ref=f4e757]
+            - cell "0.2% B" [ref=f4e758]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e759]: B
+          - row [ref=f4e760]:
+            - cell "Jan 21, 03:00 AM" [ref=f4e761]
+            - cell "txn-003318" [ref=f4e762]
+            - cell "card-0232" [ref=f4e763]
+            - cell "$200.51" [ref=f4e764]
+            - cell "0.1% B" [ref=f4e765]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e766]: B
+          - row [ref=f4e767]:
+            - cell "Jan 21, 01:11 AM" [ref=f4e768]
+            - cell "txn-003304" [ref=f4e769]
+            - cell "card-0572" [ref=f4e770]
+            - cell "$14.14" [ref=f4e771]
+            - cell "0.2% B" [ref=f4e772]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e773]: B
+          - row [ref=f4e774]:
+            - cell "Jan 21, 01:06 AM" [ref=f4e775]
+            - cell "txn-003301" [ref=f4e776]
+            - cell "card-0079" [ref=f4e777]
+            - cell "$31.45" [ref=f4e778]
+            - cell "0.5% B" [ref=f4e779]:
+              - text: 0.5%
+              - generic "blended with the GNN" [ref=f4e780]: B
+          - row [ref=f4e781]:
+            - cell "Jan 21, 12:58 AM" [ref=f4e782]
+            - cell "txn-003300" [ref=f4e783]
+            - cell "card-0327" [ref=f4e784]
+            - cell "$4.17" [ref=f4e785]
+            - cell "0.2% B" [ref=f4e786]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e787]: B
+          - row [ref=f4e788]:
+            - cell "Jan 21, 12:56 AM" [ref=f4e789]
+            - cell "txn-003299" [ref=f4e790]
+            - cell "card-0028" [ref=f4e791]
+            - cell "$34.01" [ref=f4e792]
+            - cell "0.2% B" [ref=f4e793]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e794]: B
+          - row [ref=f4e795]:
+            - cell "Jan 20, 11:36 PM" [ref=f4e796]
+            - cell "txn-003289" [ref=f4e797]
+            - cell "card-0011" [ref=f4e798]
+            - cell "$39.66" [ref=f4e799]
+            - cell "6.4% B" [ref=f4e800]:
+              - text: 6.4%
+              - generic "blended with the GNN" [ref=f4e801]: B
+          - row [ref=f4e802]:
+            - cell "Jan 20, 09:31 PM" [ref=f4e803]
+            - cell "txn-003274" [ref=f4e804]
+            - cell "card-0071" [ref=f4e805]
+            - cell "$33.53" [ref=f4e806]
+            - cell "0.3% B" [ref=f4e807]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e808]: B
+          - row [ref=f4e809]:
+            - cell "Jan 20, 09:30 PM" [ref=f4e810]
+            - cell "txn-003273" [ref=f4e811]
+            - cell "card-0421" [ref=f4e812]
+            - cell "$15.51" [ref=f4e813]
+            - cell "1.6% B" [ref=f4e814]:
+              - text: 1.6%
+              - generic "blended with the GNN" [ref=f4e815]: B
+          - row [ref=f4e816]:
+            - cell "Jan 20, 08:22 PM" [ref=f4e817]
+            - cell "txn-003265" [ref=f4e818]
+            - cell "card-0608" [ref=f4e819]
+            - cell "$20.10" [ref=f4e820]
+            - cell "5.2% B" [ref=f4e821]:
+              - text: 5.2%
+              - generic "blended with the GNN" [ref=f4e822]: B
+          - row [ref=f4e823]:
+            - cell "Jan 20, 07:41 PM" [ref=f4e824]
+            - cell "txn-003259" [ref=f4e825]
+            - cell "card-0426" [ref=f4e826]
+            - cell "$2.40" [ref=f4e827]
+            - cell "0.2% B" [ref=f4e828]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e829]: B
+          - row [ref=f4e830]:
+            - cell "Jan 20, 06:59 PM" [ref=f4e831]
+            - cell "txn-003255" [ref=f4e832]
+            - cell "card-0219" [ref=f4e833]
+            - cell "$79.59" [ref=f4e834]
+            - cell "1.3% B" [ref=f4e835]:
+              - text: 1.3%
+              - generic "blended with the GNN" [ref=f4e836]: B
+          - row [ref=f4e837]:
+            - cell "Jan 20, 06:32 PM" [ref=f4e838]
+            - cell "txn-003250" [ref=f4e839]
+            - cell "card-0405" [ref=f4e840]
+            - cell "$47.75" [ref=f4e841]
+            - cell "32.9% B" [ref=f4e842]:
+              - text: 32.9%
+              - generic "blended with the GNN" [ref=f4e843]: B
+          - row [ref=f4e844]:
+            - cell "Jan 20, 05:42 PM" [ref=f4e845]
+            - cell "txn-003247" [ref=f4e846]
+            - cell "card-0063" [ref=f4e847]
+            - cell "$24.63" [ref=f4e848]
+            - cell "0.5% B" [ref=f4e849]:
+              - text: 0.5%
+              - generic "blended with the GNN" [ref=f4e850]: B
+          - row [ref=f4e851]:
+            - cell "Jan 20, 04:58 PM" [ref=f4e852]
+            - cell "txn-003238" [ref=f4e853]
+            - cell "card-0454" [ref=f4e854]
+            - cell "$19.16" [ref=f4e855]
+            - cell "0.8% B" [ref=f4e856]:
+              - text: 0.8%
+              - generic "blended with the GNN" [ref=f4e857]: B
+          - row [ref=f4e858]:
+            - cell "Jan 20, 04:42 PM" [ref=f4e859]
+            - cell "txn-003237" [ref=f4e860]
+            - cell "card-0038" [ref=f4e861]
+            - cell "$25.49" [ref=f4e862]
+            - cell "0.2% B" [ref=f4e863]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e864]: B
+          - row [ref=f4e865]:
+            - cell "Jan 20, 04:38 PM" [ref=f4e866]
+            - cell "txn-003235" [ref=f4e867]
+            - cell "card-0048" [ref=f4e868]
+            - cell "$31.81" [ref=f4e869]
+            - cell "93.0% B" [ref=f4e870]:
+              - text: 93.0%
+              - generic "blended with the GNN" [ref=f4e871]: B
+          - row [ref=f4e872]:
+            - cell "Jan 20, 03:58 PM" [ref=f4e873]
+            - cell "txn-003230" [ref=f4e874]
+            - cell "card-0555" [ref=f4e875]
+            - cell "$176.65" [ref=f4e876]
+            - cell "0.2% B" [ref=f4e877]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e878]: B
+          - row [ref=f4e879]:
+            - cell "Jan 20, 03:19 PM" [ref=f4e880]
+            - cell "txn-003222" [ref=f4e881]
+            - cell "card-0362" [ref=f4e882]
+            - cell "$26.92" [ref=f4e883]
+            - cell "1.3% B" [ref=f4e884]:
+              - text: 1.3%
+              - generic "blended with the GNN" [ref=f4e885]: B
+          - row [ref=f4e886]:
+            - cell "Jan 20, 02:44 PM" [ref=f4e887]
+            - cell "txn-003217" [ref=f4e888]
+            - cell "card-0207" [ref=f4e889]
+            - cell "$9.29" [ref=f4e890]
+            - cell "2.4% B" [ref=f4e891]:
+              - text: 2.4%
+              - generic "blended with the GNN" [ref=f4e892]: B
+          - row [ref=f4e893]:
+            - cell "Jan 20, 02:13 PM" [ref=f4e894]
+            - cell "txn-003211" [ref=f4e895]
+            - cell "card-0479" [ref=f4e896]
+            - cell "$2.08" [ref=f4e897]
+            - cell "0.8% B" [ref=f4e898]:
+              - text: 0.8%
+              - generic "blended with the GNN" [ref=f4e899]: B
+          - row [ref=f4e900]:
+            - cell "Jan 20, 01:26 PM" [ref=f4e901]
+            - cell "txn-003208" [ref=f4e902]
+            - cell "card-0032" [ref=f4e903]
+            - cell "$81.23" [ref=f4e904]
+            - cell "0.6% B" [ref=f4e905]:
+              - text: 0.6%
+              - generic "blended with the GNN" [ref=f4e906]: B
+          - row [ref=f4e907]:
+            - cell "Jan 20, 12:41 PM" [ref=f4e908]
+            - cell "txn-003203" [ref=f4e909]
+            - cell "card-0373" [ref=f4e910]
+            - cell "$15.86" [ref=f4e911]
+            - cell "1.2% B" [ref=f4e912]:
+              - text: 1.2%
+              - generic "blended with the GNN" [ref=f4e913]: B
+          - row [ref=f4e914]:
+            - cell "Jan 20, 08:01 AM" [ref=f4e915]
+            - cell "txn-003174" [ref=f4e916]
+            - cell "card-0594" [ref=f4e917]
+            - cell "$56.29" [ref=f4e918]
+            - cell "0.3% B" [ref=f4e919]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e920]: B
+          - row [ref=f4e921]:
+            - cell "Jan 20, 06:52 AM" [ref=f4e922]
+            - cell "txn-003168" [ref=f4e923]
+            - cell "card-0108" [ref=f4e924]
+            - cell "$83.31" [ref=f4e925]
+            - cell "0.3% B" [ref=f4e926]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e927]: B
+          - row [ref=f4e928]:
+            - cell "Jan 20, 06:25 AM" [ref=f4e929]
+            - cell "txn-003165" [ref=f4e930]
+            - cell "card-0057" [ref=f4e931]
+            - cell "$67.69" [ref=f4e932]
+            - cell "0.2% B" [ref=f4e933]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e934]: B
+          - row [ref=f4e935]:
+            - cell "Jan 20, 04:53 AM" [ref=f4e936]
+            - cell "txn-003156" [ref=f4e937]
+            - cell "card-0231" [ref=f4e938]
+            - cell "$15.16" [ref=f4e939]
+            - cell "0.2% B" [ref=f4e940]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e941]: B
+          - row [ref=f4e942]:
+            - cell "Jan 20, 04:31 AM" [ref=f4e943]
+            - cell "txn-003153" [ref=f4e944]
+            - cell "card-0495" [ref=f4e945]
+            - cell "$81.02" [ref=f4e946]
+            - cell "0.5% B" [ref=f4e947]:
+              - text: 0.5%
+              - generic "blended with the GNN" [ref=f4e948]: B
+          - row [ref=f4e949]:
+            - cell "Jan 20, 04:00 AM" [ref=f4e950]
+            - cell "txn-003150" [ref=f4e951]
+            - cell "card-0070" [ref=f4e952]
+            - cell "$95.48" [ref=f4e953]
+            - cell "0.3% B" [ref=f4e954]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e955]: B
+          - row [ref=f4e956]:
+            - cell "Jan 20, 03:56 AM" [ref=f4e957]
+            - cell "txn-003149" [ref=f4e958]
+            - cell "card-0394" [ref=f4e959]
+            - cell "$9.14" [ref=f4e960]
+            - cell "0.7% B" [ref=f4e961]:
+              - text: 0.7%
+              - generic "blended with the GNN" [ref=f4e962]: B
+          - row [ref=f4e963]:
+            - cell "Jan 20, 03:37 AM" [ref=f4e964]
+            - cell "txn-003145" [ref=f4e965]
+            - cell "card-0099" [ref=f4e966]
+            - cell "$32.00" [ref=f4e967]
+            - cell "0.3% B" [ref=f4e968]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e969]: B
+          - row [ref=f4e970]:
+            - cell "Jan 20, 03:28 AM" [ref=f4e971]
+            - cell "txn-003143" [ref=f4e972]
+            - cell "card-0507" [ref=f4e973]
+            - cell "$5.26" [ref=f4e974]
+            - cell "0.1% B" [ref=f4e975]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e976]: B
+          - row [ref=f4e977]:
+            - cell "Jan 20, 02:37 AM" [ref=f4e978]
+            - cell "txn-003136" [ref=f4e979]
+            - cell "card-0358" [ref=f4e980]
+            - cell "$19.63" [ref=f4e981]
+            - cell "0.6% B" [ref=f4e982]:
+              - text: 0.6%
+              - generic "blended with the GNN" [ref=f4e983]: B
+          - row [ref=f4e984]:
+            - cell "Jan 20, 02:06 AM" [ref=f4e985]
+            - cell "txn-003134" [ref=f4e986]
+            - cell "card-0027" [ref=f4e987]
+            - cell "$23.67" [ref=f4e988]
+            - cell "0.2% B" [ref=f4e989]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e990]: B
+          - row [ref=f4e991]:
+            - cell "Jan 20, 01:59 AM" [ref=f4e992]
+            - cell "txn-003132" [ref=f4e993]
+            - cell "card-0583" [ref=f4e994]
+            - cell "$29.91" [ref=f4e995]
+            - cell "1.0% B" [ref=f4e996]:
+              - text: 1.0%
+              - generic "blended with the GNN" [ref=f4e997]: B
+          - row [ref=f4e998]:
+            - cell "Jan 20, 01:55 AM" [ref=f4e999]
+            - cell "txn-003129" [ref=f4e1000]
+            - cell "card-0069" [ref=f4e1001]
+            - cell "$41.76" [ref=f4e1002]
+            - cell "0.1% B" [ref=f4e1003]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e1004]: B
+          - row [ref=f4e1005]:
+            - cell "Jan 20, 01:49 AM" [ref=f4e1006]
+            - cell "txn-003128" [ref=f4e1007]
+            - cell "card-0606" [ref=f4e1008]
+            - cell "$12.47" [ref=f4e1009]
+            - cell "97.5% B" [ref=f4e1010]:
+              - text: 97.5%
+              - generic "blended with the GNN" [ref=f4e1011]: B
+          - row [ref=f4e1012]:
+            - cell "Jan 20, 01:32 AM" [ref=f4e1013]
+            - cell "txn-003125" [ref=f4e1014]
+            - cell "card-0177" [ref=f4e1015]
+            - cell "$25.13" [ref=f4e1016]
+            - cell "0.3% B" [ref=f4e1017]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e1018]: B
+          - row [ref=f4e1019]:
+            - cell "Jan 20, 01:04 AM" [ref=f4e1020]
+            - cell "txn-003121" [ref=f4e1021]
+            - cell "card-0159" [ref=f4e1022]
+            - cell "$8.78" [ref=f4e1023]
+            - cell "0.3% B" [ref=f4e1024]:
+              - text: 0.3%
+              - generic "blended with the GNN" [ref=f4e1025]: B
+          - row [ref=f4e1026]:
+            - cell "Jan 20, 12:48 AM" [ref=f4e1027]
+            - cell "txn-003120" [ref=f4e1028]
+            - cell "card-0020" [ref=f4e1029]
+            - cell "$23.96" [ref=f4e1030]
+            - cell "0.8% B" [ref=f4e1031]:
+              - text: 0.8%
+              - generic "blended with the GNN" [ref=f4e1032]: B
+          - row [ref=f4e1033]:
+            - cell "Jan 20, 12:45 AM" [ref=f4e1034]
+            - cell "txn-003119" [ref=f4e1035]
+            - cell "card-0256" [ref=f4e1036]
+            - cell "$7.51" [ref=f4e1037]
+            - cell "0.6% B" [ref=f4e1038]:
+              - text: 0.6%
+              - generic "blended with the GNN" [ref=f4e1039]: B
+          - row [ref=f4e1040]:
+            - cell "Jan 19, 09:42 PM" [ref=f4e1041]
+            - cell "txn-003096" [ref=f4e1042]
+            - cell "card-0101" [ref=f4e1043]
+            - cell "$119.55" [ref=f4e1044]
+            - cell "0.4% B" [ref=f4e1045]:
+              - text: 0.4%
+              - generic "blended with the GNN" [ref=f4e1046]: B
+          - row [ref=f4e1047]:
+            - cell "Jan 19, 09:39 PM" [ref=f4e1048]
+            - cell "txn-003095" [ref=f4e1049]
+            - cell "card-0430" [ref=f4e1050]
+            - cell "$80.43" [ref=f4e1051]
+            - cell "0.1% B" [ref=f4e1052]:
+              - text: 0.1%
+              - generic "blended with the GNN" [ref=f4e1053]: B
+          - row [ref=f4e1054]:
+            - cell "Jan 19, 09:25 PM" [ref=f4e1055]
+            - cell "txn-003094" [ref=f4e1056]
+            - cell "card-0095" [ref=f4e1057]
+            - cell "$14.58" [ref=f4e1058]
+            - cell "0.5% B" [ref=f4e1059]:
+              - text: 0.5%
+              - generic "blended with the GNN" [ref=f4e1060]: B
+          - row [ref=f4e1061]:
+            - cell "Jan 19, 09:25 PM" [ref=f4e1062]
+            - cell "txn-003093" [ref=f4e1063]
+            - cell "card-0166" [ref=f4e1064]
+            - cell "$12.05" [ref=f4e1065]
+            - cell "0.2% B" [ref=f4e1066]:
+              - text: 0.2%
+              - generic "blended with the GNN" [ref=f4e1067]: B
+  - contentinfo [ref=f4e33]: Scores are illustrative. Every decision is written to a hash-chained audit log.

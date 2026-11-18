@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
+import pydicom
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,7 +17,37 @@ from nexvia_imaging.db.models import AuditLog
 from nexvia_imaging.db.repo import decide, get_study, list_audit, list_studies
 
 
-def create_app(session_factory, overlay_dir: str | Path, model_version: str) -> FastAPI:
+def _demo_index(demo_dir: Path) -> list[dict]:
+    manifest_path = demo_dir / "manifest.json"
+    if not manifest_path.exists():
+        return []
+    manifest = json.loads(manifest_path.read_text())
+    studies = []
+    for entry in manifest.get("studies", []):
+        directory = demo_dir / entry["path"]
+        files = sorted(directory.glob("*.dcm"))
+        if not files:
+            continue
+        first = pydicom.dcmread(files[0])
+        studies.append(
+            {
+                "study_uid": str(first.StudyInstanceUID),
+                "modality": str(first.Modality),
+                "description": str(getattr(first, "StudyDescription", "")),
+                "image_urls": [
+                    f"/demo-dicom/{entry['path']}/{file.name}" for file in files
+                ],
+            }
+        )
+    return studies
+
+
+def create_app(
+    session_factory,
+    overlay_dir: str | Path,
+    model_version: str,
+    demo_dir: str | Path | None = None,
+) -> FastAPI:
     app = FastAPI(title="nexvia-imaging", version="0.1.0")
     app.add_middleware(
         CORSMiddleware,
@@ -29,9 +61,43 @@ def create_app(session_factory, overlay_dir: str | Path, model_version: str) -> 
     overlay_root.mkdir(parents=True, exist_ok=True)
     app.mount("/overlays", StaticFiles(directory=str(overlay_root)), name="overlays")
 
+    demo_studies: list[dict] = []
+    demo_files: dict[str, Path] = {}
+    if demo_dir is not None and Path(demo_dir).exists():
+        demo_studies = _demo_index(Path(demo_dir))
+        app.mount("/demo-dicom", StaticFiles(directory=str(demo_dir)), name="demo-dicom")
+        for entry in demo_studies:
+            if entry["image_urls"]:
+                relative = entry["image_urls"][len(entry["image_urls"]) // 2]
+                demo_files[entry["study_uid"]] = Path(demo_dir) / relative.replace(
+                    "/demo-dicom/", ""
+                )
+
     @app.get("/health")
     def health() -> dict:
         return {"status": "ok", "model_version": model_version}
+
+    @app.get("/demo/studies")
+    def demo_study_index() -> dict:
+        return {"studies": demo_studies}
+
+    @app.get("/studies/{study_id}/preview")
+    def study_preview(study_id: str):
+        """Rendered middle-slice PNG, used when DICOMweb is unavailable."""
+        import io
+
+        import pydicom
+        from fastapi.responses import Response
+
+        from nexvia_imaging.worker.pipeline import to_display_image
+
+        path = demo_files.get(study_id)
+        if path is None or not path.exists():
+            raise HTTPException(status_code=404, detail="preview not available")
+        image = to_display_image(pydicom.dcmread(path))
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        return Response(content=buffer.getvalue(), media_type="image/png")
 
     @app.get("/studies")
     def studies(

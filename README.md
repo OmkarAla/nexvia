@@ -53,6 +53,14 @@ uvicorn nexvia_fraud.api.app:app --port 8000
 
 Full details, metrics, architecture diagrams, and limitations are in [`AIML-01/README.md`](AIML-01/README.md).
 
+## Screenshots
+
+| Fraud case review | Imaging study review |
+|---|---|
+| ![Fraud case](AIML-01/docs/screenshots/fraud-case-detail.png) | ![Imaging viewer](AIML-02/docs/screenshots/imaging-cr-clean.png) |
+
+More: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) · [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
+
 ## What is demonstrated
 
 - **Streaming correctness:** at-least-once Kafka delivery, idempotent writes, fail-fast consumer.

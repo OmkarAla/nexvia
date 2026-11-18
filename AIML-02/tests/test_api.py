@@ -87,3 +87,20 @@ def test_decision_requires_comment(client):
         json={"decision": "approve", "comment": "", "reviewer": "ana"},
     )
     assert response.status_code == 422
+
+
+def test_demo_index_and_rendered_preview(tmp_path):
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+    )
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    app = create_app(factory, tmp_path / "overlays", "demo", demo_dir="data/demo")
+
+    with TestClient(app) as test_client:
+        studies = test_client.get("/demo/studies").json()["studies"]
+        assert len(studies) == 7
+        study_uid = studies[0]["study_uid"]
+        preview = test_client.get(f"/studies/{study_uid}/preview")
+        assert preview.status_code == 200
+        assert preview.headers["content-type"] == "image/png"
