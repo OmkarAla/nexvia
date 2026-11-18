@@ -156,6 +156,29 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
         reports.mkdir(parents=True, exist_ok=True)
         (reports / "metrics.json").write_text(json.dumps(metrics, indent=2))
 
+    from nexvia_fraud.tracking import log_training_run
+
+    log_training_run(
+        run_id,
+        params={
+            "model": "xgboost",
+            "n_estimators": 300,
+            "max_depth": 4,
+            "learning_rate": 0.08,
+            "subsample": 0.9,
+            "colsample_bytree": 0.9,
+            "early_stopping_rounds": 30,
+            "test_fraction": TEST_FRACTION,
+            "validation_fraction": VALIDATION_FRACTION,
+        },
+        metrics=metrics,
+        artifacts=[
+            out / "model.json",
+            out / "metrics.json",
+            out / "reference_features.parquet",
+        ],
+    )
+
     return metrics
 
 

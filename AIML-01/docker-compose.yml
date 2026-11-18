@@ -44,6 +44,14 @@ services:
   redis:
     image: redis:7-alpine
 
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.18.0
+    command: mlflow server --backend-store-uri sqlite:////mlflow/mlflow.db --artifacts-destination /mlflow/artifacts --host 0.0.0.0 --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+
   seed:
     build: .
     command: python scripts/seed.py --limit 600
@@ -122,3 +130,4 @@ services:
 
 volumes:
   pgdata:
+  mlflow-data:

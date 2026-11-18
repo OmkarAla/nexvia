@@ -226,6 +226,20 @@ def train_gnn(
     if blend is not None:
         (out / "blend.json").write_text(json.dumps(blend, indent=2))
 
+    from nexvia_fraud.tracking import log_training_run
+
+    log_training_run(
+        run_id,
+        params={"model": "graphsage", "hidden": HIDDEN, "epochs": epochs, "seed": seed},
+        metrics=metrics,
+        artifacts=[
+            out / "gnn_model.pt",
+            out / "gnn_card_scores.parquet",
+            out / "gnn_metrics.json",
+        ],
+        experiment="nexvia-fraud-gnn",
+    )
+
     return metrics
 
 

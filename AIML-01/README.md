@@ -95,6 +95,18 @@ Kafka and the consumer require Docker Compose; the API, scorer, and dashboard do
 7. `GET /audit` returns the hash-chained log with `valid: true`.
 8. `GET /metrics` shows request count and in-process p50/p95/p99.
 
+## Experiment tracking
+
+Training logs to MLflow. By default it uses a local SQLite store (`mlruns.db`, gitignored); the Compose `mlflow` service exposes a UI at <http://localhost:5000>.
+
+```bash
+docker compose up -d mlflow
+MLFLOW_TRACKING_URI=http://localhost:5000 make train
+MLFLOW_TRACKING_URI=http://localhost:5000 make gnn
+```
+
+Each run logs params, metrics, the model, the feature reference, and the metrics JSON. The XGBoost and GNN runs use separate experiments.
+
 ## Model and results
 
 Trained on the committed synthetic dataset (`data/demo/transactions.csv`, 5,000 rows, time-ordered split 80/20).
