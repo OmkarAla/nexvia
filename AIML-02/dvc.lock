@@ -1,0 +1,13 @@
+schema: '2.0'
+stages:
+  demo_dicom:
+    cmd: python -m nexvia_imaging.data.make_dicom --out data/generated --seed 7
+    params:
+      params.yaml:
+        seed: 7
+    outs:
+    - path: data/generated
+      hash: md5
+      md5: c5e3800c315c69dda3ee157e36350781.dir
+      size: 2257093
+      nfiles: 27

@@ -46,6 +46,15 @@ python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
+## Data versioning (DVC)
+
+```bash
+dvc repro          # regenerates data/generated from params.yaml
+dvc push           # sends it to the local remote (../dvc-storage)
+```
+
+The committed demo fixtures under `data/demo/` stay in git so the offline demo works without a DVC remote. The DVC stage covers regenerated data; `.dvc/config` points at a local remote, and `dvc.lock` records the stage hash.
+
 ## Training
 
 `training/train_classifier.py` + `notebooks/train_classifier_colab.ipynb`. It trains DenseNet-121 on the official NIH ChestX-ray14 sample (5,606 images) with a patient-level split. The committed checkpoint is run `colab-nih-sample-001`:
