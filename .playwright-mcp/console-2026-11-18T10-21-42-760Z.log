@@ -1,2 +1,0 @@
-[     805ms] The requested module '/node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.js?v=52118112' does not provide an export named 'default'
-[     810ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5174/favicon.ico:1
