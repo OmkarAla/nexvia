@@ -1,0 +1,105 @@
+{
+  "run_id": "colab-nih-sample-001",
+  "per_label_auroc": {
+    "Atelectasis": 0.76701607267645,
+    "Cardiomegaly": 0.7604225352112677,
+    "Effusion": 0.8302694358686501,
+    "Infiltration": 0.6898243604429172,
+    "Mass": 0.6836007130124778,
+    "Nodule": 0.6960809102402022,
+    "Pneumonia": 0.6084836665041443,
+    "Pneumothorax": 0.8139534883720929,
+    "Consolidation": 0.8004189108318372,
+    "Edema": 0.8831239168110918,
+    "Emphysema": 0.853315649867374,
+    "Fibrosis": 0.7806174957118353,
+    "Pleural_Thickening": 0.7758075258075259,
+    "Hernia": 0.9121621621621622
+  },
+  "mean_auroc": 0.7753640602514306,
+  "n": 593,
+  "prevalence": {
+    "Atelectasis": 0.0893760547041893,
+    "Cardiomegaly": 0.04215851426124573,
+    "Effusion": 0.14165261387825012,
+    "Infiltration": 0.1821247935295105,
+    "Mass": 0.05396290123462677,
+    "Nodule": 0.047217536717653275,
+    "Pneumonia": 0.011804384179413319,
+    "Pneumothorax": 0.05733558163046837,
+    "Consolidation": 0.06070826202630997,
+    "Edema": 0.026981450617313385,
+    "Emphysema": 0.021922428160905838,
+    "Fibrosis": 0.01686340570449829,
+    "Pleural_Thickening": 0.03541315346956253,
+    "Hernia": 0.0016863406635820866
+  },
+  "sensitivity_at_0.5": {
+    "Atelectasis": 0.018867924528301886,
+    "Cardiomegaly": 0.0,
+    "Effusion": 0.15476190476190477,
+    "Infiltration": 0.1574074074074074,
+    "Mass": 0.0,
+    "Nodule": 0.0,
+    "Pneumonia": 0.0,
+    "Pneumothorax": 0.029411764705882353,
+    "Consolidation": 0.0,
+    "Edema": 0.0,
+    "Emphysema": 0.0,
+    "Fibrosis": 0.0,
+    "Pleural_Thickening": 0.0,
+    "Hernia": 0.0
+  },
+  "specificity_at_0.5": {
+    "Atelectasis": 0.9962962962962963,
+    "Cardiomegaly": 1.0,
+    "Effusion": 0.9764243614931237,
+    "Infiltration": 0.9525773195876288,
+    "Mass": 1.0,
+    "Nodule": 0.9964601769911504,
+    "Pneumonia": 1.0,
+    "Pneumothorax": 0.998211091234347,
+    "Consolidation": 1.0,
+    "Edema": 1.0,
+    "Emphysema": 1.0,
+    "Fibrosis": 1.0,
+    "Pleural_Thickening": 1.0,
+    "Hernia": 1.0
+  },
+  "n_train": 4447,
+  "n_val": 566,
+  "n_test": 593,
+  "epochs": 5,
+  "batch_size": 32,
+  "image_size": 224,
+  "val_best_mean_auroc": 0.7501978849664633,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.24034258976582062,
+      "val_mean_auroc": 0.7034974815468056
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.15811607129377597,
+      "val_mean_auroc": 0.7043508100537111
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.14823752649384775,
+      "val_mean_auroc": 0.7192099731479321
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.1390010104612042,
+      "val_mean_auroc": 0.7425101942197114
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.13185393632342904,
+      "val_mean_auroc": 0.7501978849664633
+    }
+  ],
+  "train_seconds": 561.6,
+  "device": "cuda"
+}
