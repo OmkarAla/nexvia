@@ -50,9 +50,7 @@ def _transforms(patch_size: tuple[int, int, int], train: bool) -> Compose:
         EnsureChannelFirstd(keys=["image", "label"]),
         Spacingd(keys=["image", "label"], pixdim=(2.0, 2.0, 2.0), mode=("bilinear", "nearest")),
         Orientationd(keys=["image", "label"], axcodes="RAS"),
-        ScaleIntensityRanged(
-            keys="image", a_min=-57, a_max=164, b_min=0.0, b_max=1.0, clip=True
-        ),
+        ScaleIntensityRanged(keys="image", a_min=-57, a_max=164, b_min=0.0, b_max=1.0, clip=True),
         CropForegroundd(keys=["image", "label"], source_key="image"),
         EnsureTyped(keys=["image", "label"]),
     ]

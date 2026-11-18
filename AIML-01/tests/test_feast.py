@@ -50,15 +50,12 @@ def test_historical_retrieval_matches_point_in_time_table(feast_repo):
 
     features = [feature for features in FEATURE_GROUPS.values() for feature in features]
     refs = [f"{view}:{feature}" for view, group in FEATURE_GROUPS.items() for feature in group]
-    retrieved = store.get_historical_features(
-        entity_df=sample, features=refs
-    ).to_df()
+    retrieved = store.get_historical_features(entity_df=sample, features=refs).to_df()
 
     keyed = retrieved.set_index(["card_id", "event_timestamp"])
     for row in sample.itertuples(index=False):
         expected = table[
-            (table["card_id"] == row.card_id)
-            & (table["event_timestamp"] == row.event_timestamp)
+            (table["card_id"] == row.card_id) & (table["event_timestamp"] == row.event_timestamp)
         ].iloc[0]
         actual = keyed.loc[(row.card_id, row.event_timestamp)]
         for feature in features:

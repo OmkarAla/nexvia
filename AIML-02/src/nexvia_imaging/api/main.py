@@ -34,9 +34,7 @@ def _demo_index(demo_dir: Path) -> list[dict]:
                 "study_uid": str(first.StudyInstanceUID),
                 "modality": str(first.Modality),
                 "description": str(getattr(first, "StudyDescription", "")),
-                "image_urls": [
-                    f"/demo-dicom/{entry['path']}/{file.name}" for file in files
-                ],
+                "image_urls": [f"/demo-dicom/{entry['path']}/{file.name}" for file in files],
             }
         )
     return studies

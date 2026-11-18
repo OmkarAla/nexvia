@@ -2,7 +2,6 @@ from pathlib import Path
 
 import nibabel as nib
 import numpy as np
-
 from train_unet import train_unet
 
 

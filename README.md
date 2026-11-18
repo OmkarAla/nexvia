@@ -107,3 +107,7 @@ No Kaggle or medical data is redistributed. Demo fraud data is generated determi
 - Conventional commits.
 - No secrets committed; `.env.example` documents every variable.
 - CI at the repository root; each project owns its tests.
+
+## Submission checklist
+
+See [`SUBMISSION.md`](SUBMISSION.md) for the requirement matrix, metrics, screenshots, and known gaps.
