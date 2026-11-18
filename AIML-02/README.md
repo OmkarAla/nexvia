@@ -4,44 +4,70 @@ AI-assisted medical imaging review. Submission folder: `AIML-02` (imaging brief,
 
 > **Education and research only. Not a medical device. Do not use for clinical decisions.**
 
-## Status
+## What works
+
+DICOM → Orthanc → worker → DenseNet-121 + Grad-CAM → Postgres → FastAPI → Cornerstone3D viewer → approve/reject with a hash-chained audit log.
 
 | Piece | State |
 |---|---|
-| Synthetic DICOM generator (CR + CT) | done — `src/nexvia_imaging/data/make_dicom.py` |
-| Orthanc + DICOMweb client | done — `src/nexvia_imaging/dicom/client.py` |
-| Orthanc/Postgres Compose | done |
-| DenseNet-121 training (NIH sample, Colab) | done — `training/train_classifier.py` + `notebooks/train_classifier_colab.ipynb` |
-| Classifier + Grad-CAM serving | next |
-| Worker, API, audit | next |
-| Cornerstone3D viewer | next |
-| 3D U-Net (MSD spleen) | depth phase |
-| DVC | depth phase |
+| Synthetic DICOM generator (6 CR studies + 1 CT series) | done |
+| Orthanc + DICOMweb client + uploader | done |
+| DenseNet-121 training (NIH sample, Colab T4) | done — mean AUROC 0.775 |
+| Classifier + Grad-CAM serving | done |
+| Worker (stable-study polling, idempotent) | done |
+| API, decisions, audit chain | done |
+| React + Cornerstone3D viewer | done |
+| 3D U-Net (MSD spleen), DVC | depth phase |
 
-## Quickstart (data + Orthanc)
+## Run
 
 ```bash
-docker compose up -d orthanc postgres
-python scripts/upload_dicoms.py        # pushes the committed synthetic studies
+docker compose up --build
 ```
 
-Orthanc API: <http://localhost:8042>. The committed demo set is 6 CR studies + one 20-slice CT series, all tagged `SYNTHETIC` / `EDUCATION ONLY`.
+- Viewer: <http://localhost:5174>
+- API docs: <http://localhost:8000/docs>
+- Orthanc: <http://localhost:8042>
 
-## Training on Colab
+The `seed` service uploads the committed synthetic studies; the worker analyzes them; the viewer lists them within a few seconds.
 
-The trainer lives in `training/train_classifier.py`; the notebook is a thin driver. It uses the **official NIH ChestX-ray14 sample** (5,606 images, 14 findings) with a patient-level split.
+Without Docker, for backend tests only:
 
-1. Open `notebooks/train_classifier_colab.ipynb` in Colab.
-2. Add `KAGGLE_API_TOKEN` to Colab Secrets (never paste it into a cell).
-3. Run all cells. On a free T4: ~10–20 minutes for 5 epochs.
-4. Download `model.pt` and `metrics.json`, then place them in `artifacts/demo/`.
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest -q
+```
 
-Local smoke run (no GPU, tiny synthetic set) is covered by `tests/test_train_classifier.py`.
+## Training
 
-## Data
+`training/train_classifier.py` + `notebooks/train_classifier_colab.ipynb`. It trains DenseNet-121 on the official NIH ChestX-ray14 sample (5,606 images) with a patient-level split. The committed checkpoint is run `colab-nih-sample-001`:
 
-See the repository-level [`docs/data-setup.md`](../docs/data-setup.md). The full NIH archive is ~42 GB; the sample is the default for the demo. The synthetic studies are committed; no dataset is redistributed.
+| Metric | Value |
+|---|---|
+| Mean AUROC (593 test rows) | 0.775 |
+| Best validation mean AUROC | 0.750 |
+| Epochs / device | 5 / T4 |
+| Train time | 562 s |
 
-## Design
+Per-label AUROC and the calibration caveat are in [`docs/model-card.md`](docs/model-card.md).
 
-Scope and build order: [`docs/superpowers/specs/2026-11-11-two-ml-platforms-design.md`](../docs/superpowers/specs/2026-11-11-two-ml-platforms-design.md) §6. Plan: [`docs/superpowers/plans/2026-11-13-imaging-vertical-slice.md`](../docs/superpowers/plans/2026-11-13-imaging-vertical-slice.md).
+## Tests
+
+```bash
+python -m pytest -q        # 29 backend tests
+cd dashboard && npm test   # frontend helpers
+```
+
+Covered: DICOM tag correctness, deterministic UIDs, DICOMweb client parsing, worker idempotency, API decisions/409, audit verification, classifier + Grad-CAM shape/signal.
+
+## Docs
+
+- [`docs/architecture.md`](docs/architecture.md)
+- [`docs/api.md`](docs/api.md)
+- [`docs/model-card.md`](docs/model-card.md)
+- [`docs/limitations.md`](docs/limitations.md)
+- Dataset setup: [`../docs/data-setup.md`](../docs/data-setup.md)
+
+## Safety
+
+Every synthetic object is tagged `SYNTHETIC` / `EDUCATION ONLY`. Grad-CAM is labeled as model attention, not clinical evidence. Scores at the default 0.5 threshold are not calibrated; the UI ranks all findings and highlights the top two.

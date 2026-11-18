@@ -21,4 +21,4 @@ def test_compose_defines_orthanc_and_postgres():
     )
     assert result.returncode == 0, result.stderr
     services = set(result.stdout.split())
-    assert {"postgres", "orthanc", "seed", "api", "worker"} <= services
+    assert {"postgres", "orthanc", "seed", "api", "worker", "dashboard"} <= services

@@ -87,6 +87,18 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        VITE_API_URL: http://localhost:8000
+        VITE_ORTHANC_URL: http://localhost:8042
+    ports:
+      - "5174:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   pgdata:
   orthanc-data:
