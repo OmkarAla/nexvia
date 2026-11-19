@@ -103,9 +103,13 @@ def train_unet(
     num_res_units: int = 2,
     num_workers: int = 2,
     run_id: str = "unet-spleen",
+    resume: bool = False,
 ) -> dict:
     torch.manual_seed(seed)
     np.random.seed(seed)
+
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
 
     data_path = _resolve_data_dir(data_dir)
     cases = _cases(data_path)
@@ -147,11 +151,21 @@ def train_unet(
     post_label = AsDiscrete(to_onehot=2)
 
     best_dice = -1.0
-    best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
-    history = []
+    history: list[dict] = []
+    start_epoch = 0
     started = time.time()
 
-    for epoch in range(epochs):
+    if resume and (out / "unet_last.pt").exists():
+        state = torch.load(out / "unet_last.pt", map_location=device, weights_only=False)
+        model.load_state_dict(state["model"])
+        optimizer.load_state_dict(state["optimizer"])
+        scaler.load_state_dict(state["scaler"])
+        start_epoch = int(state["epoch"])
+        best_dice = float(state["best_dice"])
+        history = list(state["history"])
+        print(f"resuming from epoch {start_epoch}", flush=True)
+
+    for epoch in range(start_epoch, epochs):
         model.train()
         running = 0.0
         for batch in train_loader:
@@ -183,23 +197,63 @@ def train_unet(
             {"epoch": epoch + 1, "train_loss": running / len(train_loader), "val_dice": dice}
         )
         print(json.dumps(history[-1]), flush=True)
+
         if dice > best_dice:
             best_dice = dice
-            best_state = {
-                key: value.detach().cpu().clone() for key, value in model.state_dict().items()
-            }
+            torch.save(
+                {
+                    "state_dict": model.state_dict(),
+                    "arch": "unet3d",
+                    "channels": list(channels),
+                    "num_res_units": num_res_units,
+                    "patch_size": list(patch_size),
+                    "run_id": run_id,
+                },
+                out / "unet_model.pt",
+            )
 
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    checkpoint = {
-        "state_dict": best_state,
-        "arch": "unet3d",
-        "channels": list(channels),
-        "num_res_units": num_res_units,
-        "patch_size": list(patch_size),
-        "run_id": run_id,
-    }
-    torch.save(checkpoint, out / "unet_model.pt")
+        torch.save(
+            {
+                "model": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scaler": scaler.state_dict(),
+                "epoch": epoch + 1,
+                "best_dice": best_dice,
+                "history": history,
+            },
+            out / "unet_last.pt",
+        )
+        (out / "unet_metrics.json").write_text(
+            json.dumps(
+                {
+                    "run_id": run_id,
+                    "best_val_dice": best_dice,
+                    "n_train": len(train_cases),
+                    "n_val": len(val_cases),
+                    "epochs": epochs,
+                    "epochs_completed": epoch + 1,
+                    "patch_size": list(patch_size),
+                    "channels": list(channels),
+                    "device": str(device),
+                    "train_seconds": round(time.time() - started, 1),
+                    "history": history,
+                },
+                indent=2,
+            )
+        )
+
+    if not (out / "unet_model.pt").exists():
+        torch.save(
+            {
+                "state_dict": model.state_dict(),
+                "arch": "unet3d",
+                "channels": list(channels),
+                "num_res_units": num_res_units,
+                "patch_size": list(patch_size),
+                "run_id": run_id,
+            },
+            out / "unet_model.pt",
+        )
 
     metrics = {
         "run_id": run_id,
@@ -207,6 +261,7 @@ def train_unet(
         "n_train": len(train_cases),
         "n_val": len(val_cases),
         "epochs": epochs,
+        "epochs_completed": len(history),
         "patch_size": list(patch_size),
         "channels": list(channels),
         "device": str(device),
@@ -226,6 +281,7 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--run-id", default="unet-spleen")
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
 
     metrics = train_unet(
@@ -236,6 +292,7 @@ def main() -> None:
         limit=args.limit,
         seed=args.seed,
         run_id=args.run_id,
+        resume=args.resume,
     )
     print(json.dumps(metrics, indent=2))
 

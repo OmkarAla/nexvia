@@ -78,3 +78,40 @@ def test_cases_accept_msd_task09_names(tmp_path):
     assert resolved == inner
     assert len(cases) == 1
     assert cases[0]["image"].endswith("spleen_1.nii.gz")
+
+
+def test_unet_resume_continues_history(tmp_path):
+    data = tmp_path / "Task09_Spleen"
+    _write_case(data, 0)
+    _write_case(data, 2)
+
+    first = train_unet(
+        data,
+        tmp_path / "artifacts",
+        epochs=1,
+        patch_size=(16, 16, 8),
+        batch_size=1,
+        limit=2,
+        channels=(8, 16),
+        num_res_units=1,
+        num_workers=0,
+        run_id="resume-test",
+    )
+    second = train_unet(
+        data,
+        tmp_path / "artifacts",
+        epochs=2,
+        patch_size=(16, 16, 8),
+        batch_size=1,
+        limit=2,
+        channels=(8, 16),
+        num_res_units=1,
+        num_workers=0,
+        run_id="resume-test",
+        resume=True,
+    )
+
+    assert first["epochs_completed"] == 1
+    assert second["epochs_completed"] == 2
+    assert [entry["epoch"] for entry in second["history"]] == [1, 2]
+    assert (tmp_path / "artifacts" / "unet_last.pt").exists()
