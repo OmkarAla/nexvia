@@ -34,7 +34,6 @@ def test_unet_training_smoke(tmp_path):
     data = tmp_path / "Task09_Spleen"
     for index in range(5):
         _write_case(data, index)
-
     metrics = train_unet(
         data,
         tmp_path / "artifacts",
@@ -54,3 +53,27 @@ def test_unet_training_smoke(tmp_path):
     assert metrics["n_train"] + metrics["n_val"] == 5
     assert 0.0 <= metrics["best_val_dice"] <= 1.0
     assert metrics["epochs"] == 1
+
+
+def test_cases_accept_msd_task09_names(tmp_path):
+    from train_unet import _cases, _resolve_data_dir
+
+    inner = tmp_path / "Task09_Spleen"
+    images = inner / "imagesTr"
+    labels = inner / "labelsTr"
+    images.mkdir(parents=True)
+    labels.mkdir(parents=True)
+
+    import nibabel as nib
+    import numpy as np
+
+    array = np.zeros((8, 8, 4), dtype=np.float32)
+    nib.save(nib.Nifti1Image(array, np.eye(4)), images / "spleen_1.nii.gz")
+    nib.save(nib.Nifti1Image(array, np.eye(4)), labels / "spleen_1.nii.gz")
+
+    resolved = _resolve_data_dir(tmp_path)
+    cases = _cases(resolved)
+
+    assert resolved == inner
+    assert len(cases) == 1
+    assert cases[0]["image"].endswith("spleen_1.nii.gz")

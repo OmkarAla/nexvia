@@ -31,11 +31,28 @@ from monai.transforms import (
 )
 
 
+def _resolve_data_dir(data_dir: str | Path) -> Path:
+    """Accept either Task09_Spleen/ or a directory containing it."""
+    path = Path(data_dir)
+    if (path / "imagesTr").is_dir():
+        return path
+    for child in sorted(path.iterdir()):
+        if child.is_dir() and (child / "imagesTr").is_dir():
+            return child
+    return path
+
+
 def _cases(data_dir: Path) -> list[dict]:
     images = sorted((data_dir / "imagesTr").glob("*.nii.gz"))
     cases = []
     for image in images:
-        stem = image.name.replace("_0000.nii.gz", "")
+        name = image.name
+        if name.endswith("_0000.nii.gz"):
+            stem = name[: -len("_0000.nii.gz")]
+        elif name.endswith(".nii.gz"):
+            stem = name[: -len(".nii.gz")]
+        else:
+            continue
         label = data_dir / "labelsTr" / f"{stem}.nii.gz"
         if label.exists():
             cases.append({"image": str(image), "label": str(label)})
@@ -85,7 +102,7 @@ def train_unet(
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    data_path = Path(data_dir)
+    data_path = _resolve_data_dir(data_dir)
     cases = _cases(data_path)
     if limit is not None:
         cases = cases[:limit]
