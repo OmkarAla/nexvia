@@ -70,6 +70,7 @@ def test_cases_accept_msd_task09_names(tmp_path):
     array = np.zeros((8, 8, 4), dtype=np.float32)
     nib.save(nib.Nifti1Image(array, np.eye(4)), images / "spleen_1.nii.gz")
     nib.save(nib.Nifti1Image(array, np.eye(4)), labels / "spleen_1.nii.gz")
+    (images / "._spleen_1.nii.gz").write_bytes(b"not a dicom")
 
     resolved = _resolve_data_dir(tmp_path)
     cases = _cases(resolved)

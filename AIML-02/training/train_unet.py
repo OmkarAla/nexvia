@@ -43,7 +43,11 @@ def _resolve_data_dir(data_dir: str | Path) -> Path:
 
 
 def _cases(data_dir: Path) -> list[dict]:
-    images = sorted((data_dir / "imagesTr").glob("*.nii.gz"))
+    images = [
+        path
+        for path in sorted((data_dir / "imagesTr").glob("*.nii.gz"))
+        if not path.name.startswith("._")
+    ]
     cases = []
     for image in images:
         name = image.name
