@@ -19,6 +19,7 @@ from monai.losses import DiceCELoss
 from monai.metrics import DiceMetric
 from monai.networks.nets import UNet
 from monai.transforms import (
+    AsDiscrete,
     Compose,
     CropForegroundd,
     EnsureChannelFirstd,
@@ -140,7 +141,10 @@ def train_unet(
     ).to(device)
     loss_function = DiceCELoss(softmax=True, to_onehot_y=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+    scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
     dice_metric = DiceMetric(include_background=False, reduction="mean")
+    post_pred = AsDiscrete(argmax=True, to_onehot=2)
+    post_label = AsDiscrete(to_onehot=2)
 
     best_dice = -1.0
     best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
@@ -154,10 +158,12 @@ def train_unet(
             images = batch["image"].to(device)
             labels = batch["label"].to(device)
             optimizer.zero_grad(set_to_none=True)
-            logits = model(images)
-            loss = loss_function(logits, labels)
-            loss.backward()
-            optimizer.step()
+            with torch.amp.autocast("cuda", enabled=device.type == "cuda"):
+                logits = model(images)
+                loss = loss_function(logits, labels)
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             running += float(loss.item())
 
         model.eval()
@@ -169,7 +175,7 @@ def train_unet(
                 logits = sliding_window_inference(
                     images, patch_size, 1, model, overlap=0.5, mode="gaussian"
                 )
-                dice_metric(y_pred=logits, y=labels)
+                dice_metric(y_pred=post_pred(logits), y=post_label(labels))
         dice = float(dice_metric.aggregate().item())
         if not np.isfinite(dice):
             dice = 0.0
