@@ -16,10 +16,8 @@ import torch
 from monai.data import DataLoader, Dataset
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
-from monai.metrics import DiceMetric
 from monai.networks.nets import UNet
 from monai.transforms import (
-    AsDiscrete,
     Compose,
     CropForegroundd,
     EnsureChannelFirstd,
@@ -95,7 +93,7 @@ def train_unet(
     out_dir: str | Path,
     *,
     epochs: int = 20,
-    patch_size: tuple[int, int, int] = (64, 64, 32),
+    patch_size: tuple[int, int, int] = (96, 96, 64),
     batch_size: int = 1,
     limit: int | None = None,
     seed: int = 7,
@@ -146,9 +144,6 @@ def train_unet(
     loss_function = DiceCELoss(softmax=True, to_onehot_y=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
-    dice_metric = DiceMetric(include_background=False, reduction="mean")
-    post_pred = AsDiscrete(argmax=True, to_onehot=2)
-    post_label = AsDiscrete(to_onehot=2)
 
     best_dice = -1.0
     history: list[dict] = []
@@ -181,7 +176,8 @@ def train_unet(
             running += float(loss.item())
 
         model.eval()
-        dice_metric.reset()
+        case_dice: list[float] = []
+        predicted_fractions: list[float] = []
         with torch.no_grad():
             for batch in val_loader:
                 images = batch["image"].to(device)
@@ -189,12 +185,27 @@ def train_unet(
                 logits = sliding_window_inference(
                     images, patch_size, 1, model, overlap=0.5, mode="gaussian"
                 )
-                dice_metric(y_pred=post_pred(logits), y=post_label(labels))
-        dice = float(dice_metric.aggregate().item())
+                predictions = torch.argmax(logits, dim=1) == 1
+                targets = labels[:, 0] == 1
+                for index in range(predictions.shape[0]):
+                    predicted = predictions[index]
+                    target = targets[index]
+                    intersection = torch.logical_and(predicted, target).sum().item()
+                    denominator = predicted.sum().item() + target.sum().item()
+                    case_dice.append(2 * intersection / denominator if denominator else 0.0)
+                    predicted_fractions.append(predicted.float().mean().item())
+        dice = float(np.mean(case_dice)) if case_dice else 0.0
         if not np.isfinite(dice):
             dice = 0.0
         history.append(
-            {"epoch": epoch + 1, "train_loss": running / len(train_loader), "val_dice": dice}
+            {
+                "epoch": epoch + 1,
+                "train_loss": running / len(train_loader),
+                "val_dice": dice,
+                "val_pred_fraction": float(np.mean(predicted_fractions))
+                if predicted_fractions
+                else 0.0,
+            }
         )
         print(json.dumps(history[-1]), flush=True)
 
