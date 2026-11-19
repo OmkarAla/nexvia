@@ -29,3 +29,7 @@ Thumbs.db
 # Playwright artifacts
 .playwright-mcp/
 dvc-storage/
+
+# Local scratch
+AIML-02/.tmp-*/
+AIML-02/*artifacts*.zip
