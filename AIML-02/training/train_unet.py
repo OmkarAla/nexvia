@@ -108,6 +108,7 @@ def train_unet(
 
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    print(f"writing checkpoints to {out.resolve()}", flush=True)
 
     data_path = _resolve_data_dir(data_dir)
     cases = _cases(data_path)
