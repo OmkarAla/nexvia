@@ -68,6 +68,7 @@ def test_to_display_image_handles_ct_window():
     assert image.size == (128, 128)
     array = np.asarray(image)
     assert array.min() >= 0 and array.max() <= 255
+    assert array.max() > 0
 
 
 def test_process_study_persists_and_writes_overlays(tmp_path, session_factory):
@@ -117,3 +118,68 @@ def test_missing_series_raises(tmp_path, session_factory):
             FakeClassifier(),
             tmp_path,
         )
+
+
+class FakeSegmenter:
+    run_id = "fake-unet"
+
+    def segment(self, volume):
+        return np.ones_like(volume, dtype=np.uint8)
+
+    def overlay_slice(self, image, mask, alpha=0.45):
+        return image
+
+
+class FakeCTClient:
+    def __init__(self, datasets):
+        self.datasets = datasets
+        self.by_uid = {str(item.SOPInstanceUID): item for item in datasets}
+
+    def stable_studies(self, since):
+        return [str(self.datasets[0].StudyInstanceUID)], 3
+
+    def study_series(self, study_uid):
+        return [{"series_uid": str(self.datasets[0].SeriesInstanceUID), "modality": "CT"}]
+
+    def series_instances(self, study_uid, series_uid):
+        return list(self.by_uid)
+
+    def download_instance(self, sop_uid):
+        return self.by_uid[sop_uid]
+
+
+def test_ct_study_adds_segmentation(tmp_path, session_factory):
+    from nexvia_imaging.data.make_dicom import generate_ct_series
+
+    datasets = generate_ct_series(0, slices=3)
+    client = FakeCTClient(datasets)
+    study_uid = str(datasets[0].StudyInstanceUID)
+
+    payload = process_study(
+        study_uid, client, session_factory, FakeClassifier(), tmp_path, FakeSegmenter()
+    )
+
+    assert payload["segmentation"]
+    assert (tmp_path / payload["segmentation"]).exists()
+    with session_factory() as session:
+        study = session.get(Study, study_uid)
+        assert study.segmentation == payload["segmentation"]
+
+
+class EmptySegmenter(FakeSegmenter):
+    def segment(self, volume):
+        return np.zeros_like(volume, dtype=np.uint8)
+
+
+def test_ct_without_a_mask_has_no_segmentation(tmp_path, session_factory):
+    from nexvia_imaging.data.make_dicom import generate_ct_series
+
+    datasets = generate_ct_series(1, slices=3)
+    client = FakeCTClient(datasets)
+    study_uid = str(datasets[0].StudyInstanceUID)
+
+    payload = process_study(
+        study_uid, client, session_factory, FakeClassifier(), tmp_path, EmptySegmenter()
+    )
+
+    assert payload["segmentation"] is None

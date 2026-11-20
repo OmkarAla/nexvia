@@ -47,7 +47,7 @@ One public repository containing both allotted projects:
 | DVC | `AIML-02/dvc.yaml`, `params.yaml` | `dvc repro` stage + lock |
 | Docker | `AIML-02/docker-compose.yml` | Orthanc, Postgres, API, worker, dashboard |
 | React | `AIML-02/dashboard` | Cornerstone3D path + rendered fallback |
-| 3D U-Net segmentation | `training/train_unet.py` + notebook | training code; serving needs a trained checkpoint |
+| 3D U-Net segmentation | `training/train_unet.py`, `models/segmenter.py` | Dice 0.922 on MSD validation; worker writes a mask when one is found |
 | Audit + approve/reject | `api/main.py`, `audit/chain.py` | hash chain, second decision 409 |
 | Education notice | every UI page + docs | persistent banner and model card |
 
@@ -79,7 +79,7 @@ Imaging (`colab-nih-sample-001`, NIH sample test split): mean AUROC **0.775** ov
 ## Known gaps
 
 - Feast is wired for offline definitions, PIT retrieval, and materialization; serving still uses the in-process `FeatureService` with a parity test. A streaming feature writer is needed before serving reads Feast online without replay leakage.
-- The 3D U-Net has training code, a Colab notebook, and a smoke test, but no committed trained checkpoint or worker segmentation path yet.
+- The 3D U-Net checkpoint is MSD-only (Dice 0.922); the synthetic demo phantom is out-of-distribution, so the viewer hides the mask toggle when the model returns an empty mask.
 - Cornerstone3D is the viewer path; its codec bundle failed at runtime in this environment, so the viewer falls back to a server-rendered slice. The fallback is visible in the screenshots.
 - Docker was unavailable on the development machine during the final pass; Compose files are validated with `docker compose config` and the offline demo paths were used for screenshots.
 - Screen recordings and the final deck (beyond outlines) are not yet produced.

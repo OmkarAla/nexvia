@@ -17,9 +17,9 @@ DICOM â†’ Orthanc â†’ worker â†’ DenseNet-121 + Grad-CAM â†’ Postgres â†’ FastAP
 | Worker (stable-study polling, idempotent) | done |
 | API, decisions, audit chain | done |
 | React + Cornerstone3D viewer | done |
-| 3D U-Net training (MSD spleen) | done — `training/train_unet.py` + Colab notebook |
+| 3D U-Net training (MSD spleen) | done — best validation Dice 0.922, 100 epochs, checkpoint committed |
 | DVC pipeline | done — `dvc.yaml`, `dvc.lock`, local remote |
-| U-Net segmentation in the worker | pending a trained checkpoint |
+| CT segmentation inference | done — worker writes a mask overlay when the model finds a spleen |
 
 ## Screenshots
 
@@ -73,7 +73,7 @@ Per-label AUROC and the calibration caveat are in [`docs/model-card.md`](docs/mo
 ## Tests
 
 ```bash
-python -m pytest -q        # 32 backend tests
+python -m pytest -q        # 38 backend tests
 cd dashboard && npm test   # frontend helpers
 ```
 

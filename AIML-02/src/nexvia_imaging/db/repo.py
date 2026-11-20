@@ -40,6 +40,7 @@ def upsert_study(session: Session, payload: dict) -> Study:
     study.status = payload.get("status", study.status)
     study.findings = payload.get("findings", study.findings or [])
     study.overlays = payload.get("overlays", study.overlays or [])
+    study.segmentation = payload.get("segmentation", study.segmentation)
     study.model_version = payload.get("model_version", study.model_version)
     study.updated_at = utcnow()
 

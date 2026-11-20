@@ -53,6 +53,7 @@ def test_list_and_detail(client):
     detail = client.get("/studies/1.2.3").json()["study"]
     assert detail["description"] == "SYNTHETIC CHEST"
     assert detail["status"] == "analyzed"
+    assert detail["segmentation"] is None
 
 
 def test_missing_study_is_404(client):

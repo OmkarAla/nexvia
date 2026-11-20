@@ -13,6 +13,7 @@ export interface Study {
   status: StudyStatus;
   findings: Finding[];
   overlays: string[];
+  segmentation: string | null;
   model_version: string;
   created_at: string;
   updated_at: string;

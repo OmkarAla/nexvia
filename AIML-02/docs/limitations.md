@@ -7,7 +7,7 @@
 - **No bias analysis.** NIH metadata is incomplete; subgroup performance by age, sex, or scanner is not measured.
 - **Grad-CAM is attention, not evidence.** It is computed at the final feature map for the top two findings and can be degenerate on out-of-distribution images.
 - **Synthetic demo studies.** The committed CR/CT series are procedurally generated, not real acquisitions. DICOM tags are structurally correct but the pixels are not representative of scanner variation.
-- **No 3D U-Net yet.** The mandated spleen segmentation and MONAI pipeline are the depth phase.
+- **Segmentation is MSD-only.** The 3D U-Net reaches Dice 0.922 on MSD Task 09 validation volumes, but the synthetic demo phantom is out-of-distribution; the worker suppresses empty masks. No external cohort was evaluated.
 - **No DVC yet.** Dataset pointers and a reproducible fetch are the depth phase.
 - **Single-node demo.** Orthanc, Postgres, the worker, and the API are single replicas. No TLS, no auth, no retention policy.
 - **Audit chain caveat.** Tampering that rewrites both `audit_log` and `audit_head` is not detectable without external anchoring.

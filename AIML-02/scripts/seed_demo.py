@@ -16,6 +16,7 @@ from nexvia_imaging.config import get_settings
 from nexvia_imaging.db.engine import make_engine, make_session_factory
 from nexvia_imaging.db.repo import init_db, list_studies
 from nexvia_imaging.models.classifier import DenseNetClassifier
+from nexvia_imaging.models.segmenter import SpleenSegmenter
 from nexvia_imaging.worker.pipeline import process_study
 
 
@@ -50,12 +51,15 @@ def main() -> None:
     init_db(engine)
     session_factory = make_session_factory(engine)
     classifier = DenseNetClassifier(settings.model_dir)
+    segmenter = SpleenSegmenter(settings.model_dir)
 
     for entry in manifest["studies"]:
         directory = Path(args.data) / entry["path"]
         datasets = [pydicom.dcmread(path) for path in sorted(directory.glob("*.dcm"))]
         client = LocalStudyClient(datasets)
-        process_study(client.study_uid, client, session_factory, classifier, args.overlays)
+        process_study(
+            client.study_uid, client, session_factory, classifier, args.overlays, segmenter
+        )
         print(f"analyzed {client.study_uid} ({entry['modality']}, {len(datasets)} instances)")
 
     with session_factory() as session:

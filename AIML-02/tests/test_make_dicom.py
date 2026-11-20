@@ -37,6 +37,8 @@ def test_ct_series_shares_study_and_has_rescale():
     assert series[0].RescaleSlope == 1
     assert series[0].pixel_array.dtype.name == "int16"
     assert [int(dataset.InstanceNumber) for dataset in series] == [1, 2, 3, 4]
+    hu = series[0].pixel_array.astype(float) * series[0].RescaleSlope + series[0].RescaleIntercept
+    assert hu.max() > -500
 
 
 def test_write_demo_studies_creates_manifest(tmp_path):

@@ -13,6 +13,7 @@ export default function App() {
   const [selected, setSelected] = useState<Study | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [showSegmentation, setShowSegmentation] = useState(false);
   const [auditHash, setAuditHash] = useState<string | null>(null);
   const [modelVersion, setModelVersion] = useState("…");
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +48,8 @@ export default function App() {
   useEffect(() => {
     setOverlayIndex(0);
     setAuditHash(null);
+    setShowSegmentation(false);
+    setShowOverlay(true);
   }, [selected?.id]);
 
   async function submitDecision(decision: "approve" | "reject", comment: string) {
@@ -62,10 +65,15 @@ export default function App() {
     await refresh();
   }
 
-  const overlay =
-    selected && selected.overlays.length > 0 && showOverlay
+  const gradcam =
+    selected && selected.overlays.length > 0 && showOverlay && !showSegmentation
       ? overlayUrl(selected.overlays[Math.min(overlayIndex, selected.overlays.length - 1)])
       : null;
+  const segmentation =
+    selected && selected.segmentation && showSegmentation
+      ? overlayUrl(selected.segmentation)
+      : null;
+  const overlay = segmentation ?? gradcam;
 
   return (
     <div className="app">
@@ -105,27 +113,40 @@ export default function App() {
                 </div>
                 <div className="viewer-controls">
                   {selected.overlays.length > 0 && (
-                    <>
-                      <button
-                        type="button"
-                        className={showOverlay ? "active" : ""}
-                        onClick={() => setShowOverlay((value) => !value)}
-                      >
-                        Grad-CAM
-                      </button>
-                      {selected.overlays.length > 1 && showOverlay && (
-                        <select
-                          value={overlayIndex}
-                          onChange={(event) => setOverlayIndex(Number(event.target.value))}
-                        >
-                          {selected.overlays.map((_, index) => (
-                            <option key={index} value={index}>
-                              Finding {index + 1}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </>
+                    <button
+                      type="button"
+                      className={showOverlay && !showSegmentation ? "active" : ""}
+                      onClick={() => {
+                        setShowSegmentation(false);
+                        setShowOverlay((value) => !value);
+                      }}
+                    >
+                      Grad-CAM
+                    </button>
+                  )}
+                  {selected.segmentation && (
+                    <button
+                      type="button"
+                      className={showSegmentation ? "active" : ""}
+                      onClick={() => {
+                        setShowOverlay(false);
+                        setShowSegmentation((value) => !value);
+                      }}
+                    >
+                      Spleen mask
+                    </button>
+                  )}
+                  {selected.overlays.length > 1 && showOverlay && !showSegmentation && (
+                    <select
+                      value={overlayIndex}
+                      onChange={(event) => setOverlayIndex(Number(event.target.value))}
+                    >
+                      {selected.overlays.map((_, index) => (
+                        <option key={index} value={index}>
+                          Finding {index + 1}
+                        </option>
+                      ))}
+                    </select>
                   )}
                 </div>
               </div>

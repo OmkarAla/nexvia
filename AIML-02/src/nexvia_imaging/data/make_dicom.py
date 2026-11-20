@@ -176,7 +176,9 @@ def generate_ct_series(index: int, seed: int = 7, slices: int = 20) -> list[File
         dataset.ImagePositionPatient = [0.0, 0.0, float(slice_index * 5)]
         dataset.RescaleSlope = 1
         dataset.RescaleIntercept = -1024
-        dataset.PixelData = _ct_pixels(slice_index, slices, seed).tobytes()
+        pixels = _ct_pixels(slice_index, slices, seed)
+        stored = np.clip(pixels - dataset.RescaleIntercept, -32768, 32767).astype(np.int16)
+        dataset.PixelData = stored.tobytes()
         dataset.file_meta.MediaStorageSOPClassUID = CT_IMAGE_STORAGE
         dataset.file_meta.MediaStorageSOPInstanceUID = dataset.SOPInstanceUID
         series.append(dataset)

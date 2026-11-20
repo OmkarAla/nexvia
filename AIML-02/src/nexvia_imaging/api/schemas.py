@@ -23,6 +23,7 @@ class StudyOut(BaseModel):
     status: str
     findings: list[FindingOut]
     overlays: list[str]
+    segmentation: str | None = None
     model_version: str
     created_at: datetime
     updated_at: datetime

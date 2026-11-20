@@ -26,8 +26,16 @@ def main() -> None:
     classifier = DenseNetClassifier(settings.model_dir)
     overlay_dir = Path("data/overlays")
 
+    segmenter = None
+    try:
+        from nexvia_imaging.models.segmenter import SpleenSegmenter
+
+        segmenter = SpleenSegmenter(settings.model_dir)
+    except FileNotFoundError:
+        print("segmentation checkpoint not found; CT segmentation disabled", flush=True)
+
     while True:
-        result = run_once(client, session_factory, classifier, overlay_dir)
+        result = run_once(client, session_factory, classifier, overlay_dir, segmenter)
         print(result, flush=True)
         time.sleep(settings.poll_interval_seconds)
 

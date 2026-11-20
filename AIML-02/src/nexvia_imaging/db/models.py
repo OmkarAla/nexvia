@@ -26,6 +26,7 @@ class Study(Base):
     status: Mapped[str] = mapped_column(String(16), default="pending", index=True)
     findings: Mapped[list] = mapped_column(JSON, default=list)
     overlays: Mapped[list] = mapped_column(JSON, default=list)
+    segmentation: Mapped[str | None] = mapped_column(String(512), nullable=True)
     model_version: Mapped[str] = mapped_column(String(64), default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

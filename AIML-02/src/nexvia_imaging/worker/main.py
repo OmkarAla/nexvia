@@ -16,6 +16,7 @@ def run_once(
     session_factory,
     classifier,
     overlay_dir: str | Path,
+    segmenter=None,
 ) -> dict:
     with session_factory() as session:
         since = get_cursor(session)
@@ -26,7 +27,14 @@ def run_once(
 
     for study_uid in studies:
         try:
-            process_study(study_uid, client, session_factory, classifier, overlay_dir)
+            process_study(
+                study_uid,
+                client,
+                session_factory,
+                classifier,
+                overlay_dir,
+                segmenter,
+            )
             processed += 1
         except Exception as exc:  # noqa: BLE001 - one bad study must not stop the loop
             logger.exception("failed to process %s", study_uid)
