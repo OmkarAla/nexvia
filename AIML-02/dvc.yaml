@@ -1,4 +1,8 @@
 stages:
+  fetch_nih:
+    cmd: python scripts/fetch_nih.py --out data/nih
+    outs:
+      - data/nih
   demo_dicom:
     cmd: python -m nexvia_imaging.data.make_dicom --out data/generated --seed ${seed}
     params:

@@ -9,7 +9,9 @@ def test_dvc_pipeline_declared():
 
     pipeline = yaml.safe_load(Path("dvc.yaml").read_text())
     assert "demo_dicom" in pipeline["stages"]
+    assert "fetch_nih" in pipeline["stages"]
     assert pipeline["stages"]["demo_dicom"]["outs"] == ["data/generated"]
 
     params = yaml.safe_load(Path("params.yaml").read_text())
     assert params["seed"] == 7
+    assert Path("data/Task09_Spleen.tar.dvc").exists()

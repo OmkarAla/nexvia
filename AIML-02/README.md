@@ -55,7 +55,7 @@ dvc repro          # regenerates data/generated from params.yaml
 dvc push           # sends it to the local remote (../dvc-storage)
 ```
 
-The committed demo fixtures under `data/demo/` stay in git so the offline demo works without a DVC remote. The DVC stage covers regenerated data; `.dvc/config` points at a local remote, and `dvc.lock` records the stage hash.
+The committed demo fixtures under `data/demo/` stay in git so the offline demo works without a DVC remote. `dvc.yaml` has a `demo_dicom` stage for regenerated data and a `fetch_nih` stage for the NIH sample; `data/Task09_Spleen.tar.dvc` is a frozen `import-url --no-download` pointer for the 1.6 GB MSD archive, so the dataset version is recorded without committing it. `.dvc/config` points at a local remote.
 
 ## Training
 

@@ -1,0 +1,10 @@
+md5: fe69a317dda95fabe4cbd4ecfd238a1f
+frozen: true
+deps:
+- checksum: '"a9423005e6378fc0dd63c7ff21dbe64e-192"'
+  size: 1610352640
+  hash: md5
+  path: https://msd-for-monai.s3-us-west-2.amazonaws.com/Task09_Spleen.tar
+outs:
+- hash: md5
+  path: Task09_Spleen.tar
