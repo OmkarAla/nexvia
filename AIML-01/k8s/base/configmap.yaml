@@ -16,3 +16,4 @@ data:
   DRIFT_MIN_ROWS: "50"
   DRIFT_INTERVAL_SECONDS: "60"
   DRIFT_REFERENCE_PATH: artifacts/demo/reference_features.parquet
+  FEATURE_BACKEND: feast

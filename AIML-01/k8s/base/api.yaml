@@ -25,6 +25,8 @@ spec:
           ports: [{containerPort: 8000}]
           envFrom:
             - configMapRef: {name: nexvia-config}
+          volumeMounts:
+            - {name: feast-data, mountPath: /app/data/feast}
           readinessProbe:
             httpGet: {path: /health, port: 8000}
             initialDelaySeconds: 10
@@ -36,6 +38,9 @@ spec:
           resources:
             requests: {cpu: "250m", memory: "384Mi"}
             limits: {cpu: "1", memory: "768Mi"}
+      volumes:
+        - name: feast-data
+          persistentVolumeClaim: {claimName: feast-data}
 ---
 apiVersion: v1
 kind: Service

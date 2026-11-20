@@ -16,3 +16,4 @@ resources:
   - drift-monitor.yaml
   - dashboard.yaml
   - seed-job.yaml
+  - feast-job.yaml

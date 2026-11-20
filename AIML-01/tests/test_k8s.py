@@ -28,6 +28,7 @@ def test_kustomize_builds_the_fraud_stack():
     assert "name: consumer" in manifest
     assert "name: dashboard" in manifest
     assert "name: drift-monitor" in manifest
+    assert "name: feast-materialize" in manifest
     assert "name: postgres" in manifest
     assert "name: kafka" in manifest
     assert "nexvia-fraud:dev" in manifest

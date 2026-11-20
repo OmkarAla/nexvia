@@ -28,6 +28,7 @@ Docker Desktop Kubernetes can use the local images directly without `kind load`.
 ```bash
 kubectl apply -k k8s/overlays/kind
 kubectl -n nexvia wait --for=condition=complete job/seed --timeout=180s
+kubectl -n nexvia wait --for=condition=complete job/feast-materialize --timeout=180s
 kubectl -n nexvia get pods
 ```
 
@@ -50,12 +51,13 @@ The dashboard image is built with `VITE_API_URL=http://localhost:8000`, matching
 | `postgres` | Deployment + PVC | 1 Gi volume |
 | `kafka` | Deployment | apache/kafka 3.7.1, KRaft, in-cluster listener `kafka:9092` |
 | `redis` | Deployment | reserved for the Feast online store |
-| `api` | Deployment + Service | readiness/liveness on `/health` |
+| `api` | Deployment + Service | readiness/liveness on `/health`; Feast online with local fallback |
 | `consumer` | Deployment | waits for Kafka with `nc` |
 | `producer` | Deployment | replays at 2/s |
 | `drift-monitor` | Deployment | 60 s loop |
 | `dashboard` | Deployment + Service | nginx |
 | `seed` | Job | 600 rows, waits for Postgres |
+| `feast-materialize` | Job | populates the Feast online store into the shared `feast-data` PVC |
 
 ## Validation
 
