@@ -60,7 +60,7 @@ One public repository containing both allotted projects:
 | Tests | 81 backend (fraud), 38 backend (imaging), 12 + 2 frontend |
 | Screenshots | Both projects |
 | 10-minute deck | `presentations/AIML-01.pptx`, `presentations/AIML-02.pptx` |
-| Reflection templates | Both projects |
+| Individual reflections | `AIML-01/reflections/omkar-ala.md`, `AIML-02/reflections/omkar-ala.md` |
 | Screen recording | **Pending** - script in each demo outline |
 | Public repo + commit history | This repository |
 
