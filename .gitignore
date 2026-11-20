@@ -33,3 +33,6 @@ dvc-storage/
 # Local scratch
 AIML-02/.tmp-*/
 AIML-02/*artifacts*.zip
+
+# Local tooling
+.tools/
