@@ -59,7 +59,7 @@ One public repository containing both allotted projects:
 | README + architecture + API + model card + limitations | Both projects |
 | Tests | 75 backend (fraud), 32 backend (imaging), 12 + 2 frontend |
 | Screenshots | Both projects |
-| 10-minute deck outline | Both projects |
+| 10-minute deck | `presentations/AIML-01.pptx`, `presentations/AIML-02.pptx` |
 | Reflection templates | Both projects |
 | Screen recording | **Pending** â€” script in each demo outline |
 | Public repo + commit history | This repository |

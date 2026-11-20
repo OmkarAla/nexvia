@@ -52,7 +52,7 @@ def run_drift_check(
         request = create_retraining_request_if_absent(
             session,
             report.id,
-            f"drift share {summary['drift_share']:.2f} >= {threshold:.2f}",
+            f"automatic drift trigger: share {summary['drift_share']:.2f} >= {threshold:.2f}",
         )
 
     return {
