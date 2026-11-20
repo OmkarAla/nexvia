@@ -1,4 +1,4 @@
-# Model card â€” demo-001
+# Model card - demo-001
 
 ## Demo model
 
@@ -15,7 +15,7 @@ Demonstration of a fraud-scoring pipeline on synthetic data. It exists to show f
 ## Training data
 
 - `data/demo/transactions.csv`, generated deterministically by `src/nexvia_fraud/data/generate_demo.py` (seed 7, 5,000 rows, 30 days).
-- ~600 cards. Fraud is injected as rings of 2â€“5 cards sharing a device and email domain.
+- ~600 cards. Fraud is injected as rings of 2-5 cards sharing a device and email domain.
 - Deliberate difficulty: 35% of ring transactions revert to the card's own entities (evasion), 6% of legitimate transactions use a shared device/domain, and 1% of labels are flipped.
 - No real customer data. No Kaggle data is redistributed.
 

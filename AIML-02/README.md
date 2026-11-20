@@ -1,4 +1,4 @@
-# AIML-02 â€” Nexvia Imaging
+# AIML-02 - Nexvia Imaging
 
 
 
@@ -26,7 +26,7 @@ DICOM â†’ Orthanc â†’ worker â†’ DenseNet-121 + Grad-CAM â†’
 
 | Orthanc + DICOMweb client + uploader | done |
 
-| DenseNet-121 training (NIH sample, Colab T4) | done â€” mean AUROC 0.775 |
+| DenseNet-121 training (NIH sample, Colab T4) | done - mean AUROC 0.775 |
 
 | Classifier + Grad-CAM serving | done |
 

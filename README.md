@@ -1,11 +1,11 @@
-# Nexvia â€” AI/ML Portfolio
+# Nexvia - AI/ML Portfolio
 
 Single submission repository containing both allotted projects. Each project lives in its own folder with its own README, tests, and deliverables.
 
 | Folder | Brief | Course project | Project | Status |
 |---|---|---|---|---|
-| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud â€” real-time fraud detection | **Built** |
-| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging â€” medical imaging | **Next** |
+| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud - real-time fraud detection | **Built** |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging - medical imaging | **Next** |
 
 > Both are education projects. The fraud system runs on synthetic data; the imaging system will use public research datasets with an explicit "not for clinical use" notice.
 
@@ -27,7 +27,7 @@ Single submission repository containing both allotted projects. Each project liv
 â””â”€â”€ README.md
 ```
 
-## Quickstart â€” fraud project
+## Quickstart - fraud project
 
 Requires Docker Desktop with Compose.
 

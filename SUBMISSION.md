@@ -1,4 +1,4 @@
-# Submission â€” Nexvia AI/ML Portfolio
+# Submission - Nexvia AI/ML Portfolio
 
 **Repository:** <https://github.com/OmkarAla/nexvia>
 **Branch:** `main`
@@ -7,13 +7,13 @@ One public repository containing both allotted projects:
 
 | Folder | Brief | Course project | Project |
 |---|---|---|---|
-| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud â€” real-time fraud detection |
-| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging â€” AI-assisted medical imaging |
+| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud - real-time fraud detection |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging - AI-assisted medical imaging |
 
 ## Start here
 
-- Fraud: [`AIML-01/README.md`](AIML-01/README.md) â€” `cd AIML-01 && docker compose up --build`
-- Imaging: [`AIML-02/README.md`](AIML-02/README.md) â€” `cd AIML-02 && docker compose up --build`
+- Fraud: [`AIML-01/README.md`](AIML-01/README.md) - `cd AIML-01 && docker compose up --build`
+- Imaging: [`AIML-02/README.md`](AIML-02/README.md) - `cd AIML-02 && docker compose up --build`
 - Screenshots: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) Â· [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
 - Design and plans: [`docs/superpowers/`](docs/superpowers/)
 - Dataset setup: [`docs/data-setup.md`](docs/data-setup.md)
@@ -57,11 +57,11 @@ One public repository containing both allotted projects:
 |---|---|
 | Working demo | Both apps run offline; Compose configs validated |
 | README + architecture + API + model card + limitations | Both projects |
-| Tests | 75 backend (fraud), 32 backend (imaging), 12 + 2 frontend |
+| Tests | 81 backend (fraud), 38 backend (imaging), 12 + 2 frontend |
 | Screenshots | Both projects |
 | 10-minute deck | `presentations/AIML-01.pptx`, `presentations/AIML-02.pptx` |
 | Reflection templates | Both projects |
-| Screen recording | **Pending** â€” script in each demo outline |
+| Screen recording | **Pending** - script in each demo outline |
 | Public repo + commit history | This repository |
 
 ## Metrics
