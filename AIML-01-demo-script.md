@@ -137,3 +137,16 @@ Reason to type:
 - **Clicked the wrong alert:** pick another high-score one; the story is the same.
 - **A page is stale:** `Ctrl+R`.
 - **You flub a section:** stop, delete the take, and restart from the nearest section. The demo is stateless except for the decision — if you already rejected the top case, pick the next alert.
+---
+
+## 10-minute presentation (same recording)
+
+The deck is `presentations/AIML-01.pptx`; every slide has speaker notes. Open the presenter view and use the notes verbatim.
+
+Suggested 10-minute shape:
+
+- 0:00-3:30 slides 1-6 (problem, architecture, data, models, results)
+- 3:30-8:30 live demo (the script above)
+- 8:30-10:00 slides 7-10 (engineering, limits, next steps)
+
+One recording can satisfy both the "working demo" and "10-minute presentation" deliverables.
