@@ -30,7 +30,7 @@ One public repository containing both allotted projects:
 | Feast | `AIML-01/feature_repo`, `features/feast_service.py` | training via historical retrieval + **serving via online lookup**, transaction-keyed, parity tests |
 | MLflow | `src/nexvia_fraud/tracking.py`, Compose `mlflow` | params/metrics/artifacts logged per run |
 | FastAPI | `src/nexvia_fraud/api` | `/score`, `/alerts`, `/drift`, `/audit` |
-| Kubernetes | `AIML-01/k8s` | `kubectl kustomize` test, 8 Deployments + Job |
+| Kubernetes | `AIML-01/k8s` | deployed on kind 2026-11-21; `docs/kubernetes-evidence.md` + `docs/screenshots/k8s-dashboard.png` |
 | Evidently AI | `src/nexvia_fraud/drift` | drift reports + one-open-request gate |
 | Analyst dashboard | `AIML-01/dashboard` | live feed, case queue, SHAP, model health |
 | Drift-triggered retraining | drift job + `/retraining-requests` | human-gated request, no auto-promote |
@@ -55,7 +55,7 @@ One public repository containing both allotted projects:
 
 | Item | State |
 |---|---|
-| Working demo | Both apps run offline; Compose configs validated |
+| Working demo | Both apps run offline; fraud also deployed on kind |
 | README + architecture + API + model card + limitations | Both projects |
 | Tests | 81 backend (fraud), 38 backend (imaging), 12 + 2 frontend |
 | Screenshots | Both projects |
@@ -78,8 +78,8 @@ Imaging (`colab-nih-sample-001`, NIH sample test split): mean AUROC **0.775** ov
 
 ## Known gaps
 
-- The real IEEE-CIS run uses a 30,000-row sample; the demo metrics remain synthetic. Feast serving is transaction-keyed and assumes materialization happened before scoring.
-- The 3D U-Net checkpoint is MSD-only (Dice 0.922); the synthetic demo phantom is out-of-distribution, so the viewer hides the mask toggle when the model returns an empty mask.
-- Cornerstone3D is the viewer path; its codec bundle failed at runtime in this environment, so the viewer falls back to a server-rendered slice. The fallback is visible in the screenshots.
-- Docker was unavailable on the development machine during the final pass; Compose files are validated with `docker compose config` and the offline demo paths were used for screenshots.
-- Screen recordings and the final deck (beyond outlines) are not yet produced.
+- **Screen recordings** are the only submission artifact still pending; scripts are at `AIML-01-demo-script.md` and `AIML-02-demo-script.md`.
+- The real IEEE-CIS model uses a 30,000-row sample of 590,540 for runtime reasons; the EDA covers the full set.
+- Feast serving is transaction-keyed, exact for replay; a streaming writer for card state is the production next step.
+- The 3D U-Net is MSD-only (Dice 0.922); the synthetic demo phantom is out of distribution, so empty masks are suppressed.
+- Cornerstone3D falls back to a server-rendered slice in this environment.
