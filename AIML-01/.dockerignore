@@ -10,3 +10,5 @@ dashboard/dist
 data/raw
 data/processed
 data/*.db
+data/ieee/
+data/feast/
