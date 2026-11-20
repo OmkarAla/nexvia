@@ -59,6 +59,10 @@ The dashboard image is built with `VITE_API_URL=http://localhost:8000`, matching
 | `seed` | Job | 600 rows, waits for Postgres |
 | `feast-materialize` | Job | populates the Feast online store into the shared `feast-data` PVC |
 
+## Verified deployment
+
+Deployed on kind on 2026-11-21: see [`kubernetes-evidence.md`](kubernetes-evidence.md) and `docs/screenshots/k8s-dashboard.png` (100 alerts, model `demo-002-feast`).
+
 ## Validation
 
 ```bash

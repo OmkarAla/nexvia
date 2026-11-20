@@ -19,7 +19,7 @@ spec:
         - name: drift-monitor
           image: nexvia-fraud:dev
           imagePullPolicy: IfNotPresent
-          command: ["python", "scripts/drift_job.py", "--loop", "--interval", "60"]
+          command: ["python", "scripts/drift_job.py", "--interval", "60"]
           envFrom:
             - configMapRef: {name: nexvia-config}
           resources:

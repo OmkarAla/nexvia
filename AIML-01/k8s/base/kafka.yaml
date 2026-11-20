@@ -24,7 +24,7 @@ spec:
             - {name: KAFKA_ADVERTISED_LISTENERS, value: "PLAINTEXT://kafka:9092"}
             - {name: KAFKA_CONTROLLER_LISTENER_NAMES, value: "CONTROLLER"}
             - {name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP, value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"}
-            - {name: KAFKA_CONTROLLER_QUORUM_VOTERS, value: "1@kafka:9093"}
+            - {name: KAFKA_CONTROLLER_QUORUM_VOTERS, value: "1@localhost:9093"}
             - {name: KAFKA_INTER_BROKER_LISTENER_NAME, value: "PLAINTEXT"}
             - {name: KAFKA_AUTO_CREATE_TOPICS_ENABLE, value: "true"}
             - {name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR, value: "1"}
@@ -35,8 +35,9 @@ spec:
             exec:
               command:
                 ["/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 10
             failureThreshold: 12
           resources:
             requests: {cpu: "250m", memory: "512Mi"}
@@ -47,6 +48,8 @@ kind: Service
 metadata:
   name: kafka
 spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
   selector: {app: kafka}
   ports:
     - {name: broker, port: 9092, targetPort: 9092}

@@ -9,6 +9,7 @@ from feast import FeatureStore
 
 from nexvia_fraud.features.feast_definitions import (
     ALL_FEATURES,
+    CARD,
     TRANSACTION,
     build_transaction_view,
     views,
@@ -88,5 +89,5 @@ def apply_and_materialize(
     repo_path: str | Path, start: pd.Timestamp, end: pd.Timestamp
 ) -> None:
     store = FeatureStore(repo_path=str(repo_path))
-    store.apply([TRANSACTION, *views, build_transaction_view()])
+    store.apply([CARD, TRANSACTION, *views, build_transaction_view()])
     store.materialize(start_date=start, end_date=end)

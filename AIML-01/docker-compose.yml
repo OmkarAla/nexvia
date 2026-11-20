@@ -124,7 +124,7 @@ services:
 
   drift-monitor:
     build: .
-    command: python scripts/drift_job.py --loop --interval 60
+    command: python scripts/drift_job.py --interval 60
     restart: on-failure
     environment: *app_env
     depends_on:
