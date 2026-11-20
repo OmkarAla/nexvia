@@ -30,5 +30,6 @@ def test_compose_defines_the_full_stack():
         "consumer",
         "producer",
         "drift-monitor",
+        "feast-materialize",
         "dashboard",
     } <= services

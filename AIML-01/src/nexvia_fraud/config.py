@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     drift_min_rows: int = 50
     drift_interval_seconds: int = 60
     drift_reference_path: str = "artifacts/demo/reference_features.parquet"
+    feature_backend: str = "local"
+    feast_repo_path: str = "feature_repo"
 
 
 @lru_cache

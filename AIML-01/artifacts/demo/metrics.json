@@ -1,6 +1,6 @@
 {
-  "run_id": "demo-001",
-  "model_version": "demo-001",
+  "run_id": "demo-002-feast",
+  "model_version": "demo-002-feast",
   "pr_auc": 0.7394535014762473,
   "roc_auc": 0.877036591880342,
   "precision_at_1pct_fpr": 0.8363636363636363,

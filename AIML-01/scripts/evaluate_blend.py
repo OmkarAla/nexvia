@@ -27,7 +27,8 @@ def main() -> None:
     metrics = json.loads((model_dir / "metrics.json").read_text())
     test_start = pd.Timestamp(metrics["test_start"])
 
-    frame = pd.read_csv(args.data)
+    data_path = Path(args.data)
+    frame = pd.read_parquet(data_path) if data_path.suffix == ".parquet" else pd.read_csv(data_path)
     frame["event_time"] = pd.to_datetime(frame["event_time"], utc=True)
     test = frame[frame["event_time"] >= test_start]
 

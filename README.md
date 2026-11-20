@@ -1,11 +1,11 @@
-# Nexvia — AI/ML Portfolio
+# Nexvia â€” AI/ML Portfolio
 
 Single submission repository containing both allotted projects. Each project lives in its own folder with its own README, tests, and deliverables.
 
 | Folder | Brief | Course project | Project | Status |
 |---|---|---|---|---|
-| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud — real-time fraud detection | **Built** |
-| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging — medical imaging | **Next** |
+| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud â€” real-time fraud detection | **Built** |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging â€” medical imaging | **Next** |
 
 > Both are education projects. The fraud system runs on synthetic data; the imaging system will use public research datasets with an explicit "not for clinical use" notice.
 
@@ -13,21 +13,21 @@ Single submission repository containing both allotted projects. Each project liv
 
 ```
 .
-├── AIML-01/               # project 2: fraud (complete)
-│   ├── src/nexvia_fraud/  # API, streaming, features, models, drift, audit
-│   ├── dashboard/         # React + Vite review UI
-│   ├── tests/             # unit + integration
-│   ├── artifacts/demo/    # trained XGBoost, GraphSAGE, blend, reference data
-│   ├── docker-compose.yml
-│   ├── k8s/               # Kustomize manifests
-│   └── docs/              # architecture, API, model card, limitations
-├── AIML-02/               # project 1: imaging (scaffold)
-├── docs/superpowers/      # design spec and implementation plans
-├── .github/workflows/     # CI for the whole repository
-└── README.md
+â”œâ”€â”€ AIML-01/               # project 2: fraud (complete)
+â”‚   â”œâ”€â”€ src/nexvia_fraud/  # API, streaming, features, models, drift, audit
+â”‚   â”œâ”€â”€ dashboard/         # React + Vite review UI
+â”‚   â”œâ”€â”€ tests/             # unit + integration
+â”‚   â”œâ”€â”€ artifacts/demo/    # trained XGBoost, GraphSAGE, blend, reference data
+â”‚   â”œâ”€â”€ docker-compose.yml
+â”‚   â”œâ”€â”€ k8s/               # Kustomize manifests
+â”‚   â””â”€â”€ docs/              # architecture, API, model card, limitations
+â”œâ”€â”€ AIML-02/               # project 1: imaging (scaffold)
+â”œâ”€â”€ docs/superpowers/      # design spec and implementation plans
+â”œâ”€â”€ .github/workflows/     # CI for the whole repository
+â””â”€â”€ README.md
 ```
 
-## Quickstart — fraud project
+## Quickstart â€” fraud project
 
 Requires Docker Desktop with Compose.
 
@@ -59,7 +59,7 @@ Full details, metrics, architecture diagrams, and limitations are in [`AIML-01/R
 |---|---|
 | ![Fraud case](AIML-01/docs/screenshots/fraud-case-detail.png) | ![Imaging viewer](AIML-02/docs/screenshots/imaging-cr-clean.png) |
 
-More: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) · [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
+More: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) Â· [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
 
 ## What is demonstrated
 

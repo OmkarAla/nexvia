@@ -112,8 +112,8 @@ erDiagram
 
 ```mermaid
 flowchart LR
-    T[training transactions] --> G[HeteroData<br/>card · device · email · addr]
-    G --> S[GraphSAGE<br/>2 × SAGEConv]
+    T[training transactions] --> G[HeteroData<br/>card Â· device Â· email Â· addr]
+    G --> S[GraphSAGE<br/>2 Ã— SAGEConv]
     S --> P[gnn_card_scores.parquet]
     X[XGBoost probability] --> B[logistic blend<br/>log-odds]
     P --> B
@@ -136,7 +136,7 @@ flowchart LR
     R -->|get_online_features| S[serving handoff]
 ```
 
-`FeatureService` remains the serving path in this slice. Feast owns the offline definition, point-in-time retrieval, and materialization; a parity test asserts that historical retrieval matches `FeatureService` values for sampled transactions.
+Training builds its matrix with `get_historical_features`; serving reads `get_online_features` for the transaction's exact row. A transaction-keyed view is used so replay cannot read a future card state. Unknown ad-hoc transactions fall back to the in-process provider. Parity tests assert online == offline == local for sampled transactions.
 
 ## Drift flow
 
@@ -166,7 +166,7 @@ The job is deliberately conservative: insufficient current data returns `insuffi
 
 ## Audit chain
 
-Each row hashes `prev_hash || canonical_json(payload)`, and a singleton head row stores the latest hash under a row lock. Verification walks the chain from the genesis value and then compares the final link to the head. Mutation of a payload, or deletion of the tail, breaks verification. An attacker who can write both `audit_log` and `audit_head` can still rewrite history — external anchoring is not implemented (see `docs/limitations.md`).
+Each row hashes `prev_hash || canonical_json(payload)`, and a singleton head row stores the latest hash under a row lock. Verification walks the chain from the genesis value and then compares the final link to the head. Mutation of a payload, or deletion of the tail, breaks verification. An attacker who can write both `audit_log` and `audit_head` can still rewrite history â€” external anchoring is not implemented (see `docs/limitations.md`).
 
 ## Kubernetes
 

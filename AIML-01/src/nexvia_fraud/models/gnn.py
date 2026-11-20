@@ -315,7 +315,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=7)
     args = parser.parse_args()
 
-    frame = pd.read_csv(args.data)
+    data_path = Path(args.data)
+    frame = pd.read_parquet(data_path) if data_path.suffix == ".parquet" else pd.read_csv(data_path)
     metrics = train_gnn(frame, args.out, args.run_id, args.epochs, args.seed)
     print(json.dumps(metrics, indent=2))
 

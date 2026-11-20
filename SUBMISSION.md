@@ -1,4 +1,4 @@
-# Submission — Nexvia AI/ML Portfolio
+# Submission â€” Nexvia AI/ML Portfolio
 
 **Repository:** <https://github.com/OmkarAla/nexvia>
 **Branch:** `main`
@@ -7,14 +7,14 @@ One public repository containing both allotted projects:
 
 | Folder | Brief | Course project | Project |
 |---|---|---|---|
-| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud — real-time fraud detection |
-| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging — AI-assisted medical imaging |
+| [`AIML-01/`](AIML-01/) | AIML-01 | Project 2 | Nexvia Fraud â€” real-time fraud detection |
+| [`AIML-02/`](AIML-02/) | AIML-02 | Project 1 | Nexvia Imaging â€” AI-assisted medical imaging |
 
 ## Start here
 
-- Fraud: [`AIML-01/README.md`](AIML-01/README.md) — `cd AIML-01 && docker compose up --build`
-- Imaging: [`AIML-02/README.md`](AIML-02/README.md) — `cd AIML-02 && docker compose up --build`
-- Screenshots: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) · [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
+- Fraud: [`AIML-01/README.md`](AIML-01/README.md) â€” `cd AIML-01 && docker compose up --build`
+- Imaging: [`AIML-02/README.md`](AIML-02/README.md) â€” `cd AIML-02 && docker compose up --build`
+- Screenshots: [`AIML-01/docs/screenshots`](AIML-01/docs/screenshots) Â· [`AIML-02/docs/screenshots`](AIML-02/docs/screenshots)
 - Design and plans: [`docs/superpowers/`](docs/superpowers/)
 - Dataset setup: [`docs/data-setup.md`](docs/data-setup.md)
 
@@ -25,9 +25,9 @@ One public repository containing both allotted projects:
 | Requirement | Where | Evidence |
 |---|---|---|
 | Kafka streaming | `AIML-01/src/nexvia_fraud/streaming`, Compose `kafka` | producer/consumer tests, integration test |
-| XGBoost | `models/train.py`, `models/scorer.py` | PR-AUC 0.740, run `demo-001` |
+| XGBoost | `models/train.py`, `models/train_ieee.py` | demo PR-AUC 0.740; IEEE-CIS sample PR-AUC 0.455 |
 | PyTorch Geometric GNN | `models/graph.py`, `models/gnn.py` | GraphSAGE, card PR-AUC 0.582 |
-| Feast | `AIML-01/feature_repo`, `scripts/build_feast_features.py` | PIT retrieval + parity test; online materialization |
+| Feast | `AIML-01/feature_repo`, `features/feast_service.py` | training via historical retrieval + **serving via online lookup**, transaction-keyed, parity tests |
 | MLflow | `src/nexvia_fraud/tracking.py`, Compose `mlflow` | params/metrics/artifacts logged per run |
 | FastAPI | `src/nexvia_fraud/api` | `/score`, `/alerts`, `/drift`, `/audit` |
 | Kubernetes | `AIML-01/k8s` | `kubectl kustomize` test, 8 Deployments + Job |
@@ -61,7 +61,7 @@ One public repository containing both allotted projects:
 | Screenshots | Both projects |
 | 10-minute deck outline | Both projects |
 | Reflection templates | Both projects |
-| Screen recording | **Pending** — script in each demo outline |
+| Screen recording | **Pending** â€” script in each demo outline |
 | Public repo + commit history | This repository |
 
 ## Metrics
@@ -78,7 +78,7 @@ Imaging (`colab-nih-sample-001`, NIH sample test split): mean AUROC **0.775** ov
 
 ## Known gaps
 
-- Feast is wired for offline definitions, PIT retrieval, and materialization; serving still uses the in-process `FeatureService` with a parity test. A streaming feature writer is needed before serving reads Feast online without replay leakage.
+- The real IEEE-CIS run uses a 30,000-row sample; the demo metrics remain synthetic. Feast serving is transaction-keyed and assumes materialization happened before scoring.
 - The 3D U-Net checkpoint is MSD-only (Dice 0.922); the synthetic demo phantom is out-of-distribution, so the viewer hides the mask toggle when the model returns an empty mask.
 - Cornerstone3D is the viewer path; its codec bundle failed at runtime in this environment, so the viewer falls back to a server-rendered slice. The fallback is visible in the screenshots.
 - Docker was unavailable on the development machine during the final pass; Compose files are validated with `docker compose config` and the offline demo paths were used for screenshots.

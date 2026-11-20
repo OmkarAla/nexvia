@@ -60,7 +60,12 @@ def _best_iteration(model) -> int:
     return int(value) if value is not None else -1
 
 
-def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
+def train_model(
+    df: pd.DataFrame,
+    out_dir: str | Path,
+    run_id: str,
+    feature_matrix=None,
+) -> dict:
     frame = df.copy()
     frame["event_time"] = pd.to_datetime(frame["event_time"], utc=True)
     frame = frame.sort_values("event_time", kind="stable").reset_index(drop=True)
@@ -77,7 +82,8 @@ def train_model(df: pd.DataFrame, out_dir: str | Path, run_id: str) -> dict:
     if not train_mask.any() or not validation_mask.any() or not test_mask.any():
         raise ValueError("time split produced an empty side")
 
-    X = _build_matrix(frame, service)
+    X = feature_matrix if feature_matrix is not None else _build_matrix(frame, service)
+    X = np.asarray(X, dtype=np.float32)
     y = frame["is_fraud"].to_numpy().astype(int)
 
     X_train, y_train = X[train_mask], y[train_mask]
@@ -187,10 +193,24 @@ def main() -> None:
     parser.add_argument("--data", default="data/demo/transactions.csv")
     parser.add_argument("--out", default="artifacts/demo")
     parser.add_argument("--run-id", default="demo-001")
+    parser.add_argument("--feast-repo", default=None)
     args = parser.parse_args()
 
-    df = pd.read_csv(args.data)
-    metrics = train_model(df, args.out, args.run_id)
+    data_path = Path(args.data)
+    if data_path.suffix == ".parquet":
+        df = pd.read_parquet(data_path)
+    else:
+        df = pd.read_csv(data_path)
+    feature_matrix = None
+    if args.feast_repo:
+        from nexvia_fraud.features.feast_service import load_training_matrix
+
+        ordered = df.copy()
+        ordered["event_time"] = pd.to_datetime(ordered["event_time"], utc=True)
+        ordered = ordered.sort_values("event_time", kind="stable").reset_index(drop=True)
+        feature_matrix = load_training_matrix(ordered, args.feast_repo).to_numpy()
+        df = ordered
+    metrics = train_model(df, args.out, args.run_id, feature_matrix)
     print(json.dumps(metrics, indent=2))
 
 

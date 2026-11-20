@@ -18,3 +18,4 @@ data/processed/
 mlruns.db
 mlartifacts/
 data/feast/
+data/ieee/

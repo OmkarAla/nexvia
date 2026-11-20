@@ -23,6 +23,7 @@ def score_transaction(
         payload.get("device_id", "unknown-device"),
         payload.get("email_domain", "unknown.example"),
         payload.get("addr_id", "unknown-addr"),
+        transaction_id=payload.get("transaction_id"),
     )
     result = scorer.score(feature_values, card_id=payload["card_id"])
 

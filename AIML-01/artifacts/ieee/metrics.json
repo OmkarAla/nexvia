@@ -1,0 +1,18 @@
+{
+  "run_id": "ieee-raw-001",
+  "model_version": "ieee-raw-001",
+  "dataset": "IEEE-CIS Fraud Detection (30k row sample of 590,540)",
+  "n_train": 21000,
+  "n_validation": 3000,
+  "n_test": 6000,
+  "n_features": 386,
+  "pr_auc": 0.4549218833468469,
+  "roc_auc": 0.8551959735845823,
+  "precision_at_1pct_fpr": 0.640625,
+  "recall_at_1pct_fpr": 0.3761467889908257,
+  "precision_at_100": 0.73,
+  "prevalence_test": 0.036333333333333336,
+  "best_iteration": 251,
+  "test_start": "2018-04-20T18:17:22.400000+00:00",
+  "validation_start": "2018-03-31T11:43:25.800000+00:00"
+}

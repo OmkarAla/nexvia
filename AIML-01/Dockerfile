@@ -11,6 +11,7 @@ COPY src ./src
 RUN pip install .
 
 COPY scripts ./scripts
+COPY feature_repo ./feature_repo
 COPY data ./data
 COPY artifacts ./artifacts
 

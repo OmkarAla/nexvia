@@ -1,0 +1,13 @@
+{
+  "run_id": "ieee-gnn-001",
+  "pr_auc": 0.5305918660805803,
+  "roc_auc": 0.8015326209223848,
+  "val_pr_auc": 0.6382109898911082,
+  "n_train_cards": 2627,
+  "n_val_cards": 562,
+  "n_test_cards": 564,
+  "n_cards_total": 4503,
+  "epochs_run": 40,
+  "seed": 7,
+  "validation_start": "2018-03-31T02:50:39+00:00"
+}

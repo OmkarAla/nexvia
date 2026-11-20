@@ -61,9 +61,17 @@ services:
       MODEL_DIR: artifacts/demo
       DEMO_DATA_PATH: data/demo/transactions.csv
       ALERT_THRESHOLD: "0.5"
+      FEATURE_BACKEND: feast
     depends_on:
       postgres:
         condition: service_healthy
+
+  feast-materialize:
+    build: .
+    command: python scripts/feast_materialize.py
+    environment: *app_env
+    volumes:
+      - feast-data:/app/data/feast
 
   api:
     build: .
@@ -71,10 +79,14 @@ services:
     environment: *app_env
     ports:
       - "8000:8000"
+    volumes:
+      - feast-data:/app/data/feast
     depends_on:
       postgres:
         condition: service_healthy
       seed:
+        condition: service_completed_successfully
+      feast-materialize:
         condition: service_completed_successfully
     healthcheck:
       test:
@@ -88,12 +100,16 @@ services:
     command: python -m nexvia_fraud.streaming.worker
     restart: on-failure
     environment: *app_env
+    volumes:
+      - feast-data:/app/data/feast
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
         condition: service_healthy
       seed:
+        condition: service_completed_successfully
+      feast-materialize:
         condition: service_completed_successfully
 
   producer:
@@ -131,3 +147,4 @@ services:
 volumes:
   pgdata:
   mlflow-data:
+  feast-data:

@@ -99,6 +99,7 @@ class FeatureService:
         device_id: str,
         email_domain: str,
         addr_id: str,
+        transaction_id: str | None = None,
     ) -> dict[str, float]:
         ts = pd.Timestamp(event_time)
         if ts.tzinfo is None:

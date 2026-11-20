@@ -44,3 +44,15 @@ k8s:
 lint:
 	ruff check .
 	ruff format --check .
+
+ieee-data:
+	kaggle competitions download -c ieee-fraud-detection -p data/raw/ieee --unzip
+	python -m nexvia_fraud.data.load_ieee --data-dir data/raw/ieee --limit 150000
+	python -c "from nexvia_fraud.models.train_ieee import load_raw; load_raw('data/raw/ieee', limit=30000).to_parquet('data/ieee/raw_30k.parquet', index=False)"
+
+ieee-train:
+	python -m nexvia_fraud.models.train_ieee --data data/ieee/raw_30k.parquet --out artifacts/ieee --run-id ieee-raw-001
+
+feast-materialize:
+	python scripts/build_feast_features.py
+	python scripts/feast_materialize.py

@@ -1,6 +1,6 @@
-# Model card — demo-001
+# Model card â€” demo-001
 
-## Model
+## Demo model
 
 XGBoost binary classifier (`binary:logistic`), 300 trees with early stopping on validation PR-AUC, depth 4, learning rate 0.08, `scale_pos_weight` set from the training prevalence.
 
@@ -15,7 +15,7 @@ Demonstration of a fraud-scoring pipeline on synthetic data. It exists to show f
 ## Training data
 
 - `data/demo/transactions.csv`, generated deterministically by `src/nexvia_fraud/data/generate_demo.py` (seed 7, 5,000 rows, 30 days).
-- ~600 cards. Fraud is injected as rings of 2–5 cards sharing a device and email domain.
+- ~600 cards. Fraud is injected as rings of 2â€“5 cards sharing a device and email domain.
 - Deliberate difficulty: 35% of ring transactions revert to the card's own entities (evasion), 6% of legitimate transactions use a shared device/domain, and 1% of labels are flipped.
 - No real customer data. No Kaggle data is redistributed.
 
@@ -33,7 +33,27 @@ Split: time-ordered. The first 70% trains, the next 10% selects the early-stoppi
 | Recency | `seconds_since_last_txn` |
 | Network | `device_share_count`, `email_share_count`, `addr_share_count` (distinct cards seen on the entity before `t`) |
 
-## Metrics (run `demo-001`)
+## Real IEEE-CIS model (`ieee-raw-001`)
+
+Trained on a **30,000-row time-sorted sample of the 590,540-row IEEE-CIS training set** (3.63% test prevalence), with 386 raw competition features (amount, card/address fields, C/D series, V series, categorical codes) plus the engineered features.
+
+| Metric | Value |
+|---|---|
+| PR-AUC | 0.455 |
+| ROC-AUC | 0.855 |
+| Precision @ 1% FPR | 0.641 |
+| Recall @ 1% FPR | 0.376 |
+| Precision @ 100 | 0.730 |
+| Features | 386 |
+| GraphSAGE card PR-AUC (real sample) | 0.531 |
+
+This is a real-data result on a sample, not the full 590k set and not the synthetic demo. EDA is in `reports/ieee_eda.md`; artifacts are in `artifacts/ieee/`; the demo artifacts in `artifacts/demo/` remain synthetic.
+
+## Feature store parity
+
+The demo model was retrained from Feast historical retrieval (`demo-002-feast`) and reproduces the original metrics exactly: PR-AUC 0.7395, ROC-AUC 0.877, precision@1%FPR 0.8364. Online lookups are transaction-keyed and parity-tested against the offline table.
+
+## Demo metrics (run `demo-002-feast`)
 
 Metrics are computed on the untouched final 20% window. Early stopping selected iteration 17 using a separate validation slice.
 
@@ -91,7 +111,7 @@ Test metrics use embeddings from a graph built only from rows **before** the tes
 
 ## Blender
 
-A logistic regression maps `[logit(p_xgb), logit(p_gnn)]` to a final probability. It is fit on the validation time window (500 transactions): coefficients ≈ [0.91, 1.43], intercept ≈ −3.96.
+A logistic regression maps `[logit(p_xgb), logit(p_gnn)]` to a final probability. It is fit on the validation time window (500 transactions): coefficients â‰ˆ [0.91, 1.43], intercept â‰ˆ âˆ’3.96.
 
 Transaction-level results on the test window (999 of 1,000 rows have a GNN score):
 

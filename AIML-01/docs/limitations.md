@@ -7,13 +7,14 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 - **Synthetic only.** The demo generator injects rings, evasion, shared-entity false positives, and label noise, but it is still a simulation. Metrics do not transfer to IEEE-CIS or real traffic.
 - **No delayed labels.** Real chargebacks arrive weeks later; this demo has labels at event time.
 - **One chronological holdout.** Train/validation/test are sequential slices of one window. There is no rolling-origin validation or backtest across quarters.
+- **Real-data model is a 30k sample.** IEEE-CIS training uses 30,000 of 590,540 rows for runtime reasons; the EDA covers the raw set. The 386-feature real model is separate from the 13-feature demo model.
 
 ## Model
 
 - **Graph is a snapshot.** Serving embeddings come from a graph containing all data up to the nightly job. Evaluation avoids future edges by using a pre-test graph. A streaming graph update is not implemented.
 - **GNN labels are card-level.** A card is fraudulent if any transaction in the training window is fraudulent. That captures card reuse, but it is not the same target as transaction-level fraud.
 - **Single-fold blender.** Blend weights are fit on one validation window, not on full out-of-fold folds across time.
-- **Hand-built features.** Feast (offline Parquet, online Redis, point-in-time joins) is not wired yet. `FeatureService` preserves the interface but recomputes from the demo frame in memory.
+- **Feast keys transactions, not cards, for serving.** The online lookup is exact for replayed events and avoids future leakage, but it assumes the feature row was materialized before scoring. In production a streaming writer would maintain the online store; unknown transactions fall back to the in-process provider.
 - **Drift is covariate only.** Evidently compares feature distributions to the training reference. Concept drift (`P(y|x)` changing) and delayed-label performance are not observed. A drift breach raises a request; it is not proof of degradation.
 - **No calibration.** Scores are used as ranking and threshold inputs. A reliability diagram is not yet produced.
 
@@ -45,4 +46,4 @@ This is a vertical slice. The following are deliberate gaps, not oversights.
 
 ## Next phase
 
-Per the design doc §12: Feast, GNN + blender, Evidently drift, retraining requests, K8s manifests, then the imaging repo.
+Per the design doc Â§12: Feast, GNN + blender, Evidently drift, retraining requests, K8s manifests, then the imaging repo.
