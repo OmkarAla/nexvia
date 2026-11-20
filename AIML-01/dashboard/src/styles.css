@@ -499,6 +499,12 @@ h3 {
   text-align: right;
 }
 
+.feed th.right,
+.feed td.right {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .blend-marker {
   display: inline-block;
   margin-left: 5px;
